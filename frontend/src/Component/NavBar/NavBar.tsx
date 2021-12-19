@@ -12,8 +12,8 @@ class NavBar extends Component{
                     <span>.io</span>
                 </div>
             </div>
-        )
+        );
     }
 }
 
-export default NavBar
+export default NavBar;

@@ -22,7 +22,9 @@
   },
   "include": [
     "src",
-    "src/Component/*",
-    "src/Pages"
+    "src/Component/Footer",
+    "src/Component/NavBar",
+    "src/Pages",
+    "src/Pages/MainPage"
   ]
 }

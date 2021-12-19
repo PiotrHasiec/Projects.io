@@ -1,0 +1,13 @@
+#Search{
+    width: 60%;
+    margin: 2em;
+}
+
+#Search button{
+    background-color: #D61A46;
+    color: #FBDFE6;
+}
+
+#Search .input-group{
+    width: 40%;
+}
