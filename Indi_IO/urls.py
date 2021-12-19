@@ -9,7 +9,6 @@ from users.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include("users.urls")),
-    path('kategoria/<id>/',categories, name = 'kategoria'),
     path('projekt/<id>/',projects, name = 'projekt'),
     path('login/',LoginView.as_view(),name = "login"),
     path('',include('account.urls')),

@@ -1,11 +1,11 @@
 from rest_framework.decorators import permission_classes
-from .models import StandardUser
+from .models import  User
 from rest_framework import viewsets, permissions
 from .serializers import UserSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
-    queryset = StandardUser.objects.all()
+    queryset =  User.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     serializer_class = UserSerializer
