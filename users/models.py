@@ -69,8 +69,8 @@ class Projects(models.Model):
 
     stage = CharField(max_length=255, choices=ProjectStages.choices, default=ProjectStages.BRAINSTORM, null=False)
     description = TextField(max_length=255, null=False)
-    folder = FilePathField(allow_folders=True)
-    averageRate = DecimalField(max_digits=3, decimal_places=2)
+    folder = FilePathField(path = "./FilesBase",allow_folders=True)
+    averageRate = DecimalField(max_digits=3, decimal_places=2, default=0)
 
     def __str__(self) -> str:
         return self.title
@@ -134,7 +134,7 @@ class Users(models.Model):
     name = CharField(max_length=50, unique=True, null=False)
     avatar = ImageField(width_field=255, height_field=255, blank=True)
     description = TextField(max_length=255)
-    averageRate = DecimalField(max_digits=3, decimal_places=2,blank=True,null=True)
+    averageRate = DecimalField(max_digits=3, decimal_places=2,default=0)
 
     def __str__(self) -> str:
         return self.name
