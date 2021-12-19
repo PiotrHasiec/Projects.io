@@ -22,7 +22,7 @@
   },
   "include": [
     "src",
-    "src/Component",
+    "src/Component/*",
     "src/Pages"
   ]
 }

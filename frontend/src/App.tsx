@@ -2,7 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Card, CardBody, CardFooter, CardHeader } from 'reactstrap';
-import NavBar from './Component/NavBar';
+import NavBar from './Component/NavBar/NavBar';
 
 function App() {
   return (
