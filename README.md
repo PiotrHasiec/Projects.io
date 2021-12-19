@@ -1,2 +1,1 @@
-# Projects.io
-Project for Software Engineering Course
+# Indi_IO
