@@ -131,10 +131,10 @@ class SkillsDeveloper(models.Model):
 class Users(models.Model):
     idRole = ForeignKey('Roles', on_delete=SET_DEFAULT, null=False, default=0)
     mail = EmailField(unique=True, null=False)
-    name = TextField(max_length=50, unique=True, null=False)
-    avatar = ImageField(width_field=255, height_field=255)
+    name = CharField(max_length=50, unique=True, null=False)
+    avatar = ImageField(width_field=255, height_field=255, blank=True)
     description = TextField(max_length=255)
-    averageRate = DecimalField(max_digits=3, decimal_places=2)
+    averageRate = DecimalField(max_digits=3, decimal_places=2,blank=True,null=True)
 
     def __str__(self) -> str:
         return self.name
