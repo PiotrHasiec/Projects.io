@@ -11,3 +11,5 @@ optional-django
 requests-oauthlib
 rpclib
 rsa
+autopep8
+pillow

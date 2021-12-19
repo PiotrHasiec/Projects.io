@@ -1,17 +1,17 @@
 from django.contrib import admin
 
-from .models import  Projects, Users
-
-# Register your models here.
-#@admin.register(Projects)
-#class ProjectAdmin(admin.ModelAdmin):
-##    list_display = ('__all__')
+from .models import  *
 
 admin.site.register(Projects)
 admin.site.register(Users)
-#@admin.register( Users)
-#class UsersAdmin(admin.ModelAdmin):
- #   list_display = ('__all__')
+admin.site.register(Applications)
+admin.site.register(Advertisements)
+admin.site.register(CollaboratorsProject)
+admin.site.register(Positions)
+admin.site.register(RatingProject)
+admin.site.register(RatingUsers)
+admin.site.register(Roles)
+admin.site.register(SkillsDeveloper)
 
 
 

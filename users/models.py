@@ -5,7 +5,6 @@ from django.db.models.fields import *
 from django.db.models.fields.files import *
 from django.db.models.fields.related import *
 from django.core.validators import *
-from django.contrib.auth.models import User
 
 
 class Applications(models.Model):
@@ -17,7 +16,7 @@ class Applications(models.Model):
         ACCEPTED = 'A', 'accepted'
         REJECTED = 'R', 'rejected'
 
-    acceptionState = CharField(
+    acceptionState = CharField(max_length=255,
         choices=AcceptionStates.choices, default=AcceptionStates.PENDING)
 
     def __str__(self) -> str:
@@ -29,8 +28,8 @@ class Applications(models.Model):
 
 
 class Advertisements(models.Model):
-    idProject = ForeignKey('Project', on_delete=CASCADE, null=False)
-    idPosition = ForeignKey('Position', on_delete=SET_NULL)
+    idProject = ForeignKey('Projects', on_delete=CASCADE, null=False)
+    idPosition = ForeignKey('Positions', on_delete=SET_NULL, null=True)
     description = TextField(max_length=255)
 
     class Meta:
@@ -39,10 +38,9 @@ class Advertisements(models.Model):
 
 
 class CollaboratorsProject(models.Model):
-    idProject = ForeignKey('Project', primary_key=True,
-                           on_delete=CASCADE, null=False)
-    idUser = ForeignKey('Users', primary_key=True, on_delete=CASCADE, null=False)
-    idPosition = ForeignKey('Positions', on_delete=SET_NULL)
+    idProject = ForeignKey('Projects', on_delete=CASCADE, null=False)
+    idUser = ForeignKey('Users', on_delete=CASCADE, null=False)
+    idPosition = ForeignKey('Positions', on_delete=SET_NULL, null=True)
 
     class Meta:
         verbose_name = "Twórca"
@@ -61,7 +59,7 @@ class Positions(models.Model):
 
 
 class Projects(models.Model):
-    idOwner = ForeignKey('Users', on_delete=SET_NULL)
+    idOwner = ForeignKey('Users', on_delete=SET_NULL, null=True)
     title = TextField(max_length=50, unique=True, null=False)
 
     class ProjectStages(TextChoices):
@@ -69,8 +67,7 @@ class Projects(models.Model):
         EARLYBIRD = 'EB', 'EarlyBird'
         PlayGround = 'PG', 'PlayGround'
 
-    stage = CharField(choices=ProjectStages.choices,
-                      default=ProjectStages.BRAINSTORM, null=False)
+    stage = CharField(max_length=255, choices=ProjectStages.choices, default=ProjectStages.BRAINSTORM, null=False)
     description = TextField(max_length=255, null=False)
     folder = FilePathField(allow_folders=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2)
@@ -84,25 +81,25 @@ class Projects(models.Model):
 
 
 class RatingProject(models.Model):
-    idProject = ForeignKey('Project', primary_key=True,
-                           on_delete=CASCADE, null=False)
-    idUser = ForeignKey('Users', primary_key=True, on_delete=CASCADE, null=False)
+    idProject = ForeignKey('Projects', on_delete=CASCADE, null=False)
+    idUser = ForeignKey('Users', on_delete=CASCADE, null=False)
     mark = IntegerField(null=False, validators=[
                         MaxValueValidator(5), MinValueValidator(0)])
 
     class Meta:
+        unique_together = (("idProject", "idUser"),)
         verbose_name = "Ocena projektu"
         verbose_name_plural = "Oceny projektów"
 
 
 class RatingUsers(models.Model):
-    idRatedUser = ForeignKey('Users', primary_key=True,
-                             on_delete=CASCADE, null=False)
-    idUser = ForeignKey('Users', primary_key=True, on_delete=CASCADE, null=False)
+    idRatedUser = ForeignKey('Users', related_name='%(class)s_requests_created', on_delete=CASCADE, null=False)
+    idUser = ForeignKey('Users', on_delete=CASCADE, null=False)
     mark = IntegerField(null=False, validators=[
                         MaxValueValidator(5), MinValueValidator(0)])
 
     class Meta:
+        unique_together = (("idRatedUser", "idUser"),)
         verbose_name = "Ocena użytkownika"
         verbose_name_plural = "Oceny użytkowników"
 
@@ -119,7 +116,7 @@ class Roles(models.Model):
 
 
 class SkillsDeveloper(models.Model):
-    idUser = ForeignKey('Users', primary_key=True, on_delete=CASCADE, null=False)
+    idUser = OneToOneField('Users', primary_key=True, on_delete=CASCADE, null=False)
     Cpp = BooleanField(null=False, default=False)
     CSharp = BooleanField(null=False, default=False)
 
@@ -138,7 +135,7 @@ class Users(models.Model):
     avatar = ImageField(width_field=255, height_field=255)
     description = TextField(max_length=255)
     averageRate = DecimalField(max_digits=3, decimal_places=2)
-    owner= models.ForeignKey(User,related_name="users",on_delete=models.CASCADE, null = True)
+
     def __str__(self) -> str:
         return self.name
 
