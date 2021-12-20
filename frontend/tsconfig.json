@@ -25,6 +25,7 @@
     "src/Component/Footer",
     "src/Component/NavBar",
     "src/Pages",
-    "src/Pages/MainPage"
+    "src/Pages/MainPage",
+    "src/Pages/SearchProject"
   ]
 }

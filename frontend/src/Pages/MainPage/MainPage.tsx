@@ -1,5 +1,5 @@
 import { Component, ReactNode } from "react"
-import NavBar from "../Component/NavBar/NavBar";
+import NavBar from "../../Component/NavBar/NavBar";
 import "./MainPage.css"
 
 class MainPage extends Component

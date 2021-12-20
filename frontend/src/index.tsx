@@ -4,7 +4,8 @@ import './index.css';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import MainPage from './Pages/MainPage';
+import MainPage from './Pages/MainPage/MainPage';
+import SearchProject from './Pages/SearchProject/SearchProject';
 import App from './App';
 
 
@@ -14,6 +15,7 @@ const routing = (
     <Router>
         <Routes>
           <Route path="/" element={<MainPage />} /> 
+          <Route path="/Projects" element={<SearchProject />} /> 
         </Routes>
     </Router>
   </div>
