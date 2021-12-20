@@ -1,0 +1,17 @@
+#main{
+    background-color: #D51A46;
+}
+
+#title{
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 58px;
+}
+
+#title span:nth-child(1){
+    color: #EC6988;
+}
+
+#title span:nth-child(2){
+    color: #340913;
+}
