@@ -8,8 +8,10 @@ from django.urls import path, include
 from users.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',include("users.urls")),
+    
   #  path('projekt/<id>/',projects, name = 'projekt'),
     path('login/',LoginView.as_view(),name = "login"),
     path('',include('account.urls')),
+    path('Projects/',include('projects.urls')),
+    path('Users/',include("users.urls"))
 ]
