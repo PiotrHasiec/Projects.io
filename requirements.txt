@@ -1,0 +1,15 @@
+django==3.0.14
+djangorestframework
+django-rest-knox
+django-filter
+cryptography
+urllib3
+knox
+oauthlib
+boto3
+optional-django
+requests-oauthlib
+rpclib
+rsa
+autopep8
+pillow
