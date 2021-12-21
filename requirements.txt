@@ -13,3 +13,4 @@ rpclib
 rsa
 autopep8
 pillow
+django-cors-headers
