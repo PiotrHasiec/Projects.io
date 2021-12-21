@@ -1,3 +1,4 @@
+from django.db import models
 from django.http.response import JsonResponse
 #from rest_framework.decorators import permission_classes
 from rest_framework.decorators import action
@@ -8,6 +9,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
 from django.db.models import Avg
 from .serializers import *
+
 
 class ProjectsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
@@ -30,9 +32,13 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         elif request.method == 'GET':
           data = request.GET
         
-        RatingProject.objects.create(idProject_id = int(pk),
+
+          RatingProject.objects.update_or_create(idProject_id = int(pk),
                                       idUser_id =int(data.get("idUser",None)),
-                                      mark = data.get("mark",None))
+                                      defaults = {'mark':  data.get("mark",None)} )
+
+
+          
         mark =RatingProject.objects.filter(idProject_id = pk).aggregate(avg_mark = Avg('mark'))
         Projects.objects.filter(pk = pk).update(averageRate = mark['avg_mark'])
         return Response()
