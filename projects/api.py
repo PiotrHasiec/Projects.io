@@ -22,8 +22,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         return Response([ProjectSerializer(item).data, Users.objects.filter(pk = item.idOwner.pk).first().name])
 
     def byTitle(self, request, title = "", *args, **kwargs):
-      self.queryset =  Projects.objects.filter(title__contains=str(title))
-      return Response(ProjectSerializer(self.queryset, many = True).data)
+      queryset =  Projects.objects.filter(title__contains=str(title))
+      return Response(ProjectSerializer(queryset, many = True).data)
 
     @action(detail=True,methods=['POST','GET'])
     def mark(self, request,pk=None, **kwargs):
@@ -54,7 +54,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         queryset = queryset.filter(title__icontains=str(title_contain))
       
       if (not desc_contain ==""):
-          queryset = queryset.filter(decription__icontains=str(title_contain))
+          queryset = queryset.filter(decription__icontains=str(desc_contain))
 
       if (not sorting == ""):
         queryset = queryset.order_by(sorting)
@@ -65,8 +65,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       projects = [ [ProjectSerializer(item).data, Users.objects.filter(pk = item.idOwner.pk).first().name] for item in queryset ]
       return Response(projects)
         
-    #def get_queryset(self):
-     #   return self.request.user.users.all()
+    def get_queryset(self):
+        return  Projects.objects.all()
 
    #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)
