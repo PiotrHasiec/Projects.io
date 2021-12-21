@@ -57,7 +57,6 @@ class Positions(models.Model):
         verbose_name = "Stanowisko"
         verbose_name_plural = "Stanowiska"
 
-
 class Projects(models.Model):
     idOwner = ForeignKey('Users', on_delete=SET_NULL, null=True)
     title = TextField(max_length=50, unique=True, null=False)
@@ -70,6 +69,7 @@ class Projects(models.Model):
     stage = CharField(max_length=255, choices=ProjectStages.choices, default=ProjectStages.BRAINSTORM, null=False)
     description = TextField(max_length=255, null=False)
     folder = FilePathField(path = "./FilesBase",allow_folders=True)
+    presentation = FilePathField(path = "./FilesBase",allow_folders=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2, default=0)
 
     def __str__(self) -> str:
