@@ -28,10 +28,10 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       count =  request.GET.get('count',"")
       queryset = Projects.objects.all()
       if not title_contain == "":
-        queryset = queryset.filter(title__contains=str(title_contain))
+        queryset = queryset.filter(title__icontains=str(title_contain))
       
       if (not desc_contain ==""):
-          queryset = queryset.filter(decription__contains=str(title_contain))
+          queryset = queryset.filter(decription__icontains=str(title_contain))
 
       if (not sorting == ""):
         queryset = queryset.order_by(sorting)
