@@ -1,10 +1,13 @@
 from django.http.response import JsonResponse
 #from rest_framework.decorators import permission_classes
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from users.models import Projects
+from users.models import Projects, RatingProject
 from users.models import Users
+from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
-from .serializers import ProjectSerializer
+from django.db.models import Avg
+from .serializers import *
 
 class ProjectsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
@@ -12,13 +15,27 @@ class ProjectsViewSet(viewsets.ModelViewSet):
    
 
     serializer_class = ProjectSerializer
-    def create(self, request, *args, **kwargs):
-
-      pass
+    def retrieve(self, request, pk=None):
+        item = Projects.objects.get(pk = pk)
+        return Response([ProjectSerializer(item).data, Users.objects.filter(pk = item.idOwner.pk).first().name])
 
     def byTitle(self, request, title = "", *args, **kwargs):
       self.queryset =  Projects.objects.filter(title__contains=str(title))
       return Response(ProjectSerializer(self.queryset, many = True).data)
+
+    @action(detail=True,methods=['POST','GET'])
+    def mark(self, request,pk=None, **kwargs):
+        if request.method == 'POST':
+          data = request.POST
+        elif request.method == 'GET':
+          data = request.GET
+        
+        RatingProject.objects.create(idProject_id = int(pk),
+                                      idUser_id =int(data.get("idUser",None)),
+                                      mark = data.get("mark",None))
+        mark =RatingProject.objects.filter(idProject_id = pk).aggregate(avg_mark = Avg('mark'))
+        Projects.objects.filter(pk = pk).update(averageRate = mark['avg_mark'])
+        return Response()
 
     def list(self, request, *args, **kwargs):
 
@@ -35,13 +52,9 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
       if (not sorting == ""):
         queryset = queryset.order_by(sorting)
-      
-     
 
       if not count == "":
         queryset = queryset[:int(count)]
-
-      
 
       projects = [ [ProjectSerializer(item).data, Users.objects.filter(pk = item.idOwner.pk).first().name] for item in queryset ]
       return Response(projects)
@@ -51,6 +64,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
    #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)
+
+
 
 #class ProjectViewSet(viewsets.ModelViewSet):
  #   permission_classes = [permissions.AllowAny]
