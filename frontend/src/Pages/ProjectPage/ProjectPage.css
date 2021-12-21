@@ -13,9 +13,6 @@
     margin: auto;
     display: flex;
     border-radius: 2em;
-    border-color: black;
-    border-style: double;
-    border-width: 1em;
   }
 
   #Promos-image img{
@@ -27,9 +24,6 @@
     width: 90%;
     margin: auto;
     text-align: justify;
-    border-color: black;
-    border-style:groove;
-    border-width: 0.2em;
   }
 
   #Promos-text text{
@@ -50,9 +44,6 @@
     width: 95%;
     margin: auto;
     text-align: justify;
-    border-color: black;
-    border-style:groove;
-    border-width: 0.2em;
   }
 
   #Details-text text{

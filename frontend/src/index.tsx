@@ -7,6 +7,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import MainPage from './Pages/MainPage/MainPage';
 import SearchProject from './Pages/SearchProject/SearchProject';
 import App from './App';
+import ProjectPage from './Pages/ProjectPage/ProjectPage';
 
 
 
@@ -16,6 +17,7 @@ const routing = (
         <Routes>
           <Route path="/" element={<MainPage />} /> 
           <Route path="/Projects" element={<SearchProject />} /> 
+          <Route path="/Projects/:id" element={<ProjectPage />} /> 
         </Routes>
     </Router>
   </div>
