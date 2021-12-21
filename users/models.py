@@ -59,7 +59,7 @@ class Positions(models.Model):
 
 class Projects(models.Model):
     idOwner = ForeignKey('Users', on_delete=SET_NULL, null=True)
-    title = TextField(max_length=50, unique=True, null=False)
+    title = TextField(max_length=50, null=False)
 
     class ProjectStages(TextChoices):
         BRAINSTORM = 'BS', 'BrainStorm'
