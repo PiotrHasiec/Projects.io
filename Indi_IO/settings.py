@@ -61,7 +61,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 X_FRAME_OPTIONS = 'ALLOW'
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000","http://127.0.0.1:8000:3000"]
+CORS_ORIGIN_WHITELIST = ["http://localhost:3000","http://127.0.0.1:3000"]
 CORS_ALLOW_ALL_ORIGINS: True
 CORS_ALLOW_METHODS = [
     "DELETE",
