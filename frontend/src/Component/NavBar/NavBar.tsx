@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import "./NavBar.css"
 import { Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 
 class NavBar extends Component{
     render(){
         return(
-            <div className="navbar" id="main">
-                <div id="title">
-                    <span>Projects</span>  
-                    <span>.io</span>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+                <div className="navbar" id="main">
+                    <div id="title">
+                        <span>Projects</span>  
+                        <span>.io</span>
+                    </div>
                 </div>
-            </div>
+            </Link>
         );
     }
 }
