@@ -1,0 +1,35 @@
+#LoginCard{
+    border-radius: 25px;
+    background: #D61A46;
+    padding: 20px;
+    width: 25%;
+    margin: auto;
+    margin-top: 2em;
+    text-align: center;
+}
+
+#LoginCard h1{
+    color: #FBDFE6;;
+}
+
+#LoginCard h3{
+    color: #000000;
+}
+
+#LoginCard table{
+    width: 85%;
+    margin: auto;
+    margin-top: 1em;
+    padding: 5px;
+}
+
+#LoginCard table input{
+    margin: 2px;
+}
+
+#LoginCard table button{
+    width: 40%;
+    margin: 1em;
+    background-color: #EC6988;
+    color: #FBDFE6;
+}
