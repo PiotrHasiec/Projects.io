@@ -13,6 +13,8 @@ class NavBar extends Component{
                         <span>Projects</span>  
                         <span>.io</span>
                     </div>
+                    <button type="button" className='btn'>Sign in</button>
+                    <button type="button" className='btn'>Sign up</button>
                 </div>
             </Link>
         );
