@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["graph_models --pydot -a -g -o my_project_visualized.png"]
+            "args": ["runserver"]
         }
     ]
 }
