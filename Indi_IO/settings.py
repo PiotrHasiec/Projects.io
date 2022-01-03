@@ -79,6 +79,12 @@ CORS_ALLOW_METHODS = [
     "POST",
     "PUT",
 ]
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
+
 CORS_ALLOW_HEADERS = [
     "accept",
     "accept-encoding",

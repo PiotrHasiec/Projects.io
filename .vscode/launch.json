@@ -9,7 +9,7 @@
         
 
         {
-            "name": "${workspaceFolder}\\ manage.py",
+            "name": "${workspaceFolder}\\ manage.py ",
             "type": "python",
             "request": "launch",
             "program": "${file}",
