@@ -17,7 +17,7 @@ export const load_user = () => async dispatch => {
         }; 
 
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL}/auth/users/me/`, config);
+            const res = await axios.get(`http://localhost:35123/auth/users/me/`, config);
     
             dispatch({
                 type: USER_LOADED_SUCCESS,
@@ -37,6 +37,7 @@ export const load_user = () => async dispatch => {
 
 
 export const login = (email: string, password: string) => async dispatch => {
+    console.log("debugg2");
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export const login = (email: string, password: string) => async dispatch => {
     const body = JSON.stringify({ email, password });
 
     try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/auth/jwt/create/`, body, config);
+        const res = await axios.post(`http://localhost:35123/auth/jwt/create/`, body, config);
 
         dispatch({
             type: LOGIN_SUCCESS,
