@@ -8,18 +8,24 @@ import MainPage from './Pages/MainPage/MainPage';
 import SearchProject from './Pages/SearchProject/SearchProject';
 import App from './App';
 import ProjectPage from './Pages/ProjectPage/ProjectPage';
+import LoginPage from './Pages/LoginPage/LoginPage';
 
+import { Provider } from 'react-redux';
+import store from './store';
 
 
 const routing = (
   <div>
-    <Router>
+    <Provider store={store}>
+      <Router>
         <Routes>
           <Route path="/" element={<MainPage />} /> 
           <Route path="/Projects" element={<SearchProject />} /> 
           <Route path="/Projects/:id" element={<ProjectPage />} /> 
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
-    </Router>
+      </Router>
+    </Provider>
   </div>
 )
 

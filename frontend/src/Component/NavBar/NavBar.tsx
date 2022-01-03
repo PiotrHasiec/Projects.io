@@ -13,7 +13,9 @@ class NavBar extends Component{
                         <span>Projects</span>  
                         <span>.io</span>
                     </div>
-                    <button type="button" className='btn'>Sign in</button>
+                    <Link to="/login" style={{ textDecoration: 'none' }}>
+                        <button type="button" className='btn'>Sign in</button>
+                    </Link>
                     <button type="button" className='btn'>Sign up</button>
                 </div>
             </Link>
