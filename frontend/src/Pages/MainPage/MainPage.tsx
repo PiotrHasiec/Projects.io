@@ -8,7 +8,6 @@ class MainPage extends Component
   render(): ReactNode {
     return(
       <div>
-      <NavBar></NavBar>
       <div id="Search" className="card">
         <div className="card-body">
           <h2 className="card-title">Discover the projects!</h2>

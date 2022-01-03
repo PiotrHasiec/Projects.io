@@ -1,11 +1,12 @@
 import React, { Component, ReactNode, useState } from "react"
+import { Route, Navigate } from 'react-router-dom';
 import NavBar from "../../Component/NavBar/NavBar";
 import "./LoginPage.css";
 import { connect } from "react-redux";
 import { FC } from "react";
 import { login } from "../../Actions/auth";
 
-const LoginPage = ({login}) => {
+const LoginPage = ({login, isAuthenticated}) => {
     const [formmData, setFormData] = useState({
         email: '',
         password: ''
@@ -19,9 +20,12 @@ const LoginPage = ({login}) => {
         login(email, password);
     }
 
+    if (isAuthenticated) {
+        return <Navigate replace to="/" />
+    }
+
     return (
         <div>
-            <NavBar></NavBar>
             <div>
                 <div id="LoginCard">
                     <h1>WELCOME</h1>

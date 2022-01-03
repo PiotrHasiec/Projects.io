@@ -50,8 +50,6 @@ class RegisterPage extends Component {
 
         return (
             <div>
-                <NavBar></NavBar>
-
                 <div>
                     <div id="RegisterCard">
                         <h1>WELCOME</h1>
