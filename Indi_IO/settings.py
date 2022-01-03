@@ -49,7 +49,13 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTENTICATION_CLASSES":('rest_framework_simplejwt.authentication.JWTAuthentication'),
+    "DEFAULT_AUTENTICATION_CLASSES":(
+    
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
+    'rest_framework.authentication.TokenAuthentication'),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser'
+   )
 }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -168,8 +174,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR,'build.static')]
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-    
+    'AUTH_HEADER_TYPES': ('Bearer','JWT',),
+    'AUTH_TOKEN_CLASSES': (
+        'rest_framework_simplejwt.tokens.AccessToken',
+    )
 }
 
 DJOSER = {
