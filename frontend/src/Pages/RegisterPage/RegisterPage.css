@@ -1,0 +1,35 @@
+#RegisterCard{
+    border-radius: 25px;
+    background: #D61A46;
+    padding: 20px;
+    width: 25%;
+    margin: auto;
+    margin-top: 2em;
+    text-align: center;
+}
+
+#RegisterCard h1{
+    color: #FBDFE6;;
+}
+
+#RegisterCard h3{
+    color: #000000;
+}
+
+#RegisterCard table{
+    width: 85%;
+    margin: auto;
+    margin-top: 1em;
+    padding: 5px;
+}
+
+#RegisterCard table input{
+    margin: 2px;
+}
+
+#RegisterCard table button{
+    width: 40%;
+    margin: 1em;
+    background-color: #EC6988;
+    color: #FBDFE6;
+}
