@@ -12,7 +12,7 @@ from .serializers import *
 
 
 class ProjectsViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset =  Projects.objects.all()
    
 
@@ -25,16 +25,21 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       queryset =  Projects.objects.filter(title__contains=str(title))
       return Response(ProjectSerializer(queryset, many = True).data)
 
-    @action(detail=True,methods=['POST','GET'])
+   # @action(detail=True,methods=['DELETE'])
+    def destroy(self, request,pk=None, **kwargs):
+      queryset = Projects.objects.filter(pk=pk,idUser_id =int(request.user.id)).delete()
+      
+
+
+    @action(detail=True,methods=['POST'])
     def mark(self, request,pk=None, **kwargs):
         if request.method == 'POST':
           data = request.POST
-        elif request.method == 'GET':
-          data = request.GET
         
-
+        
+        
           RatingProject.objects.update_or_create(idProject_id = int(pk),
-                                      idUser_id =int(data.get("idUser",None)),
+                                      idUser_id =int(request.user.id),
                                       defaults = {'mark':  data.get("mark",None)} )
 
 

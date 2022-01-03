@@ -16,6 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True,methods=['POST','GET'])
     def mark(self, request,pk=None, **kwargs):
+        permission_classes = [permissions.IsAuthenticated]
         if request.method == 'POST':
           data = request.POST
         elif request.method == 'GET':
@@ -33,7 +34,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return response.Response()
 
     def list(self, request, *args, **kwargs):
-
+      permission_classes = [permissions.AllowAny]
       sorting = request.GET.get('sort',"")
       name_contain =  request.GET.get('namecontain',"")
       desc_contain = request.GET.get('descecontain',"")
