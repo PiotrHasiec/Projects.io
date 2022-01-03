@@ -5,12 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "${workspaceFolder}\\ manage.py",
+            "name": "${workspaceFolder}\\ manage.py ",
             "type": "python",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["runserver"]
+            "args": ["graph_models --pydot -a -g -o my_project_visualized.png"]
         }
     ]
 }
