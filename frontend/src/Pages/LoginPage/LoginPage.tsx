@@ -1,80 +1,51 @@
-import React, { Component, ReactNode } from "react"
+import React, { Component, ReactNode, useState } from "react"
 import NavBar from "../../Component/NavBar/NavBar";
-import "./LoginPage.css"
-import { useLocation } from "react-router-dom";
-import { convertToObject } from "typescript";
-import { Params } from 'react-router-dom';
+import "./LoginPage.css";
+import { connect } from "react-redux";
+import { FC } from "react";
+import {login} from "../../Actions/auth";
 
+const LoginPage:FC = () => {
+    const [formmData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
 
+    const { email, password } = formmData;
 
+    const onChange = e => setFormData({ ...formmData, [e.target.name]: e.target.value });
 
-class LoginPage extends Component {
-
-
-
-
-    state = {
-        project: [],
-        loading: true,
-        error: false
-    };
-
-    componentWillMount() {
-        this.getObject();
+    const onSubmit = e => {
+        e.preventDefault();
+        login(email, password);
     }
 
-    getObject() {
-        const location = window.location.pathname.split("/");
-
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/?format=json'.replace(":id", location[2]), {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(responseJson => this.setState({
-                project: [responseJson],
-                loading: false
-            }))
-            .catch(error => this.setState({
-                error: true,
-                loading: false
-            }));
-    }
-
-
-
-    render(): ReactNode {
-        const { project, loading, error } = this.state;
-
-        return (
+    return (
+        <div>
+            <NavBar></NavBar>
             <div>
-                <NavBar></NavBar>
+                <div id="LoginCard">
+                    <h1>WELCOME</h1>
+                    <h3>Please sign in</h3>
+                    <div className="input-group mb-3">
+                        <form onSubmit={e => onSubmit(e)}>
+                            <input type="text" name="email" className="form-control" placeholder="Login" aria-label="Login" aria-describedby="basic-addon2" value={email} required/>
 
-                <div>
-                    <div id="LoginCard">
-                        <h1>WELCOME</h1>
-                        <h3>Please sign in</h3>
-                        <div className="input-group mb-3">
-                            <table>
-                                <input type="text" className="form-control" placeholder="Login" aria-label="Login" aria-describedby="basic-addon2" />
-
-                                <input type="text" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" />
-                                <div className="input-group-append">
-                                    <button className="btn btn-outline-secondary" type="button">Sign in</button>
-                                    <button className="btn btn-outline-secondary" type="button">Sign up</button>
-                                </div>
-                            </table>
-                        </div>
+                            <input type="password" name="password" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" value={password} required/>
+                            <div className="input-group-append">
+                                <button className="btn btn-outline-secondary" type="submit">Sign in</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
-
-            </div >
-        );
-    }
+            </div>
+        </div >
+    )
 }
 
-export default LoginPage;
+
+const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated
+})
+
+export default connect(mapStateToProps, { login })(LoginPage);
