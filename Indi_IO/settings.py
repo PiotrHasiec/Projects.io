@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import socket
+from datetime import timedelta
 socket.getaddrinfo('localhost', 25)
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,13 +50,12 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTENTICATION_CLASSES":(
-    
-    'rest_framework_simplejwt.authentication.JWTAuthentication',
-    'rest_framework.authentication.TokenAuthentication'),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAdminUser'
-   )
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
 }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -174,10 +174,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR,'build.static')]
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('Bearer','JWT',),
+    'AUTH_HEADER_TYPES': ('JWT',),
     'AUTH_TOKEN_CLASSES': (
         'rest_framework_simplejwt.tokens.AccessToken',
-    )
+    ),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 
 DJOSER = {

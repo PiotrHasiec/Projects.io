@@ -19,7 +19,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     def retrieve(self, request, pk=None):
         item = Projects.objects.get(pk = pk)
-        return Response([ProjectSerializer(item).data, Users.objects.filter(pk = item.idOwner.pk).first().name])
+        return Response({"Project": ProjectSerializer(item).data, "Meneger": Users.objects.filter(pk = item.idOwner.pk).first().name})
 
     def byTitle(self, request, title = "", *args, **kwargs):
       queryset =  Projects.objects.filter(title__contains=str(title))
@@ -34,7 +34,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     @action(detail=True,methods=['POST'])
     def mark(self, request,pk=None, **kwargs):
         if request.method == 'POST':
-          data = request.POST
+          data = request.data
         
         
         
@@ -67,7 +67,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       if not count == "":
         queryset = queryset[:int(count)]
 
-      projects = [ [ProjectSerializer(item).data, Users.objects.filter(pk = item.idOwner.pk).first().name] for item in queryset ]
+      projects = [ {"Project": ProjectSerializer(item).data, "Meneger":Users.objects.filter(pk = item.idOwner.pk).first().name} for item in queryset ]
       return Response(projects)
         
     def get_queryset(self):
