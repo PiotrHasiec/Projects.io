@@ -1,11 +1,15 @@
 from rest_framework import serializers
 from users.models import Projects,RatingProject
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectAuthorizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Projects
         fields = "__all__"
-
+        
+class ProjectUnAuthorizeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Projects
+        fields = ("pk","title", "averageRate", "stage", "description")        
 class RatingProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = RatingProject
