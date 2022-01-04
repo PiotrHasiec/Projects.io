@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../../Actions/auth';
-import { Nav } from 'reactstrap';
+import './NavBar.css'
 
 const NavBar = ({logout, isAuthenticated}) => {
     
@@ -14,30 +14,27 @@ const NavBar = ({logout, isAuthenticated}) => {
     };
 
     const guestLinks = () => (
-        <Fragment>
+        <div>
             <Link to="/login" style={{ textDecoration: 'none' }}>
                         <button type="button" className='btn'>Sign in</button>
             </Link>
             <button type="button" className='btn'>Sign up</button>
-        </Fragment>
+        </div>
     );
 
     const authLinks = () => (
-        <a className='nav-link' href='#!' style={{ textDecoration: 'none' }} onClick={logout_user}>
-            <button type="button" className='btn'>Logout</button>
-        </a>
+        <div>
+            <button type="button" className='btn' onClick={logout_user}>Logout</button>
+        </div>
     );
 
 
     return(
-        <div>
-            <Link to="/" style={{ textDecoration: 'none' }}>
-                <div className="navbar" id="main">
-                    <div id="title">
-                        <span>Projects</span>  
-                        <span>.io</span>
-                    </div>
-                    
+        <div className="navbar" id="main">
+            <Link to="/" style={{ textDecoration: 'none', marginRight: 'auto' }}>
+                <div id="title">
+                    <span>Projects</span>  
+                    <span>.io</span>
                 </div>
             </Link>
             {isAuthenticated ? authLinks() : guestLinks()}
