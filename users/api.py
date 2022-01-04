@@ -3,6 +3,8 @@ from .models import  Users, RatingUsers
 from rest_framework import response, viewsets, permissions
 from .serializers import UserSerializer
 from django.db.models import Avg
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
@@ -57,5 +59,15 @@ class UserViewSet(viewsets.ModelViewSet):
 
     #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)
+    @action(detail=True,methods=['POST','GET'])
+    
+    def upload(self,request,pk=None, *args, **kwargs):
+      if request.method == 'POST':
+        filename = request.data.get('filename')
+        uploaded_file= request.FILES['document']
+        print(uploaded_file.size)
+        path = default_storage.save('Projects.io-main/FilesBase/'+filename, ContentFile(uploaded_file.read()))
+        print(path)
+      return response.Response()
 
     
