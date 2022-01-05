@@ -49,14 +49,13 @@ class SearchProject extends Component{
         const { projects, loading, error } = this.state;
         return(
             <div>
-                <NavBar></NavBar>
                 
                 {loading && <div>Loading...</div>}
                 {!loading && !error && projects.map(project => 
                 <div className="card-body">
-                    <h2 className="card-title">{project[0]["title"]}</h2>
-                    <p className="card-text">Author: {project[1]}</p>
-                    <Link to={"/Projects/"+project[0]["id"]} style={{ textDecoration: 'none' }}>
+                    <h2 className="card-title">{project["Project"]["title"]}</h2>
+                    <p className="card-text">Author: {project["Meneger"]}</p>
+                    <Link to={"/Projects/"+project["Project"]["id"]} style={{ textDecoration: 'none' }}>
                         <button className="btn btn-outline-secondary" type="button">Show</button>
                     </Link>
                 </div>)

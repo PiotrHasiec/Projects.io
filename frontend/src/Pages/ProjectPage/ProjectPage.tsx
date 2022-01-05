@@ -52,14 +52,13 @@ class ProjectPage extends Component {
 
         return (
             <div>
-                <NavBar></NavBar>
                 {loading && <div>Loading...</div>}
                 {!loading && !error && project.map(project =>
                     <div>
                          <div id="Promos">
                     <div className="square-body">
                         <div id="Promos-text">
-                            <h1><text>{project[0]["title"]}</text></h1>
+                            <h1><text>{project["Project"]["title"]}</text></h1>
                         </div>
                         <div id="Promos-image">
                             <img src="../logo512.png"></img>
@@ -67,7 +66,7 @@ class ProjectPage extends Component {
 
                         <div id="Promos-text">
                             <h1><text>Description</text></h1>
-                            <h3><text>{project[0]["description"]}</text></h3>
+                            <h3><text>{project["Project"]["description"]}</text></h3>
                         </div>
                     </div>
                 </div>
@@ -79,19 +78,19 @@ class ProjectPage extends Component {
                             <table>
                                 <tr>
                                     <td><text>Title:</text></td>
-                                    <td><text>{project[0]["title"]}</text></td>
+                                    <td><text>{project["Project"]["title"]}</text></td>
                                 </tr>
                                 <tr>
                                     <td> <text>Development state:</text></td>
-                                    <td> <text>{project[0]["stage"]}</text></td>
+                                    <td> <text>{project["Project"]["stage"]}</text></td>
                                 </tr>
                                 <tr>
                                     <td><text>Owner:</text></td>
-                                    <td><text>{project[1]}</text></td>
+                                    <td><text>{project["Meneger"]}</text></td>
                                 </tr>
                                 <tr>
                                     <td><text>Rate:</text></td>
-                                    <td><text>{project[0]["averageRate"]}</text></td>
+                                    <td><text>{project["Project"]["averageRate"]}</text></td>
                                 </tr>
                                 
                             </table>

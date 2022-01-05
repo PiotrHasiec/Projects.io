@@ -9,7 +9,7 @@ import SearchProject from './Pages/SearchProject/SearchProject';
 import App from './App';
 import ProjectPage from './Pages/ProjectPage/ProjectPage';
 import LoginPage from './Pages/LoginPage/LoginPage';
-
+import Layout from "./hocs/Layout/Layout"
 import { Provider } from 'react-redux';
 import store from './store';
 
@@ -18,12 +18,14 @@ const routing = (
   <div>
     <Provider store={store}>
       <Router>
-        <Routes>
-          <Route path="/" element={<MainPage />} /> 
-          <Route path="/Projects" element={<SearchProject />} /> 
-          <Route path="/Projects/:id" element={<ProjectPage />} /> 
-          <Route path="/login" element={<LoginPage />} />
-        </Routes>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<MainPage />} /> 
+            <Route path="/Projects" element={<SearchProject />} /> 
+            <Route path="/Projects/:id" element={<ProjectPage />} /> 
+            <Route path="/login" element={<LoginPage />} />
+          </Routes>
+        </Layout>
       </Router>
     </Provider>
   </div>
