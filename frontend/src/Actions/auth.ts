@@ -17,7 +17,7 @@ export const load_user = () => async dispatch => {
         }; 
 
         try {
-            const res = await axios.get(`http://localhost:35123/auth/users/me/`, config);
+            const res = await axios.get(`http://localhost:8000/auth/users/me/`, config);
     
             dispatch({
                 type: USER_LOADED_SUCCESS,
@@ -48,7 +48,7 @@ export const login = (email: string, password: string) => async dispatch => {
     const body = JSON.stringify({ email, password });
 
     try {
-        const res = await axios.post(`http://localhost:35123/auth/jwt/create/`, body, config);
+        const res = await axios.post(`http://localhost:8000/auth/jwt/create/`, body, config);
 
         dispatch({
             type: LOGIN_SUCCESS,
