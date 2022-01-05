@@ -31,7 +31,7 @@
     margin: 0.3em;
 }
 
-#main :nth-child(3){
+#singup{
     border: #fff 1px solid;
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }

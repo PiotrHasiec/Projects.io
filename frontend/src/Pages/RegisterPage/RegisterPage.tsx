@@ -1,85 +1,71 @@
-import React, { Component, ReactNode } from "react"
-import NavBar from "../../Component/NavBar/NavBar";
+import React, { useState } from "react"
 import "./RegisterPage.css"
-import { useLocation } from "react-router-dom";
-import { convertToObject } from "typescript";
-import { Params } from 'react-router-dom';
+import { connect } from "react-redux";
+import { signup } from "../../Actions/auth";
+import { Link, Navigate } from "react-router-dom";
 
 
 
 
-class RegisterPage extends Component {
+const RegisterPage = ({ signup, isAuthenticated }) => {
 
+    const [accountCreated, setAccountCreated] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        re_password: ''
+    });
 
+    const { name, email, password, re_password } = formData;
 
+    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    state = {
-        project: [],
-        loading: true,
-        error: false
+    const onSubmit = e => {
+        e.preventDefault();
+
+        if (password === re_password) {
+            signup(name, email, password, re_password);
+            setAccountCreated(true);
+        }
     };
 
-    componentWillMount() {
-        this.getObject();
+    if (isAuthenticated) {
+        return <Navigate to='/' />
     }
-
-    getObject() {
-        const location = window.location.pathname.split("/");
-
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/?format=json'.replace(":id", location[2]), {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(responseJson => this.setState({
-                project: [responseJson],
-                loading: false
-            }))
-            .catch(error => this.setState({
-                error: true,
-                loading: false
-            }));
+    if (accountCreated) {
+        return <Navigate to='/login' />
     }
-
-
-    render(): ReactNode {
-        const { project, loading, error } = this.state;
-
-        return (
+    
+    return (
+        <div>
             <div>
-                <div>
-                    <div id="RegisterCard">
-                        <h1>WELCOME</h1>
-                        <h3>Please sign up</h3>
-                        <div className="input-group mb-3">
-                            <table>
-                                <input type="text" className="form-control" placeholder="First name" aria-label="First name" aria-describedby="basic-addon2" />
-
-                                <input type="text" className="form-control" placeholder="Last name" aria-label="Last name" aria-describedby="basic-addon2" />
-
-                                <input type="text" className="form-control" placeholder="Login" aria-label="Login" aria-describedby="basic-addon2" />
-
-                                <input type="text" className="form-control" placeholder="E-mail" aria-label="E-mail" aria-describedby="basic-addon2" />
-
-                                <input type="text" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" />
-
-                                <input type="text" className="form-control" placeholder="Confirm password" aria-label="Confirm password" aria-describedby="basic-addon2" />
-
-                                <div className="input-group-append">
-                                    <button className="btn btn-outline-secondary" type="button">Sign up</button>
-                                </div>
-                            </table>
-                        </div>
+                <div id="RegisterCard">
+                    <h1>WELCOME</h1>
+                    <h3>Please sign up</h3>
+                    <div className="input-group mb-3">
+                        <form onSubmit={e => onSubmit(e)}>
+                            <input type="text" className="form-control" placeholder="Name" aria-label="Name" aria-describedby="basic-addon2" name="name" value={name} onChange={e => onChange(e)}/>
+                            <input type="email" className="form-control" placeholder="E-mail" aria-label="E-mail" name="email" value={email} onChange={e => onChange(e)} aria-describedby="basic-addon2" />
+                            <input type="password" className="form-control" placeholder="Password" aria-label="Password" name="password" value={password} onChange={e => onChange(e)} aria-describedby="basic-addon2" />
+                            <input type="password" className="form-control" placeholder="Confirm password" aria-label="Confirm password" name="re_password" value={re_password} onChange={e => onChange(e)} aria-describedby="basic-addon2" />
+                            <button className="btn btn-outline-secondary" type="submit">Sign up</button>
+                        </form>
+                        <p className='m-auto'>
+                            Already have an account? <Link to='/login'>Sign In</Link>
+                        </p>
                     </div>
                 </div>
+            </div>
 
 
-            </div >
-        );
-    }
+        </div >
+    );
+ 
 }
 
-export default RegisterPage;
+const mapStateToProps = state => ({
+    isAuthenticated: state.auth.isAuthenticated
+})
+
+export default connect(mapStateToProps, {signup})(RegisterPage);

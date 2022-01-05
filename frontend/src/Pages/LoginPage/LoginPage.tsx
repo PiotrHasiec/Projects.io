@@ -6,13 +6,13 @@ import { connect } from "react-redux";
 import { login } from "../../Actions/auth";
 
 const LoginPage = ({login, isAuthenticated}) => {
-    const [formmData, setFormData] = useState({
+    const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
-    const { email, password } = formmData;
+    const { email, password } = formData;
 
-    const onChange = e => setFormData({ ...formmData, [e.target.name]: e.target.value });
+    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const onSubmit = e => {
         e.preventDefault();

@@ -1,35 +1,38 @@
 #RegisterCard{
-    border-radius: 25px;
-    background: #D61A46;
+    border-radius: 0.25rem;
+    background: #fff;
     padding: 20px;
     width: 25%;
     margin: auto;
     margin-top: 2em;
     text-align: center;
+    border: 1px solid rgba(0,0,0,.125);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+
 }
 
 #RegisterCard h1{
-    color: #FBDFE6;;
+    color: #D61A46;
 }
 
 #RegisterCard h3{
-    color: #000000;
+    color: #340913;
 }
 
-#RegisterCard table{
+#RegisterCard form{
     width: 85%;
     margin: auto;
     margin-top: 1em;
     padding: 5px;
 }
 
-#RegisterCard table input{
+#RegisterCard input{
     margin: 2px;
 }
 
-#RegisterCard table button{
+#RegisterCard button{
     width: 40%;
     margin: 1em;
-    background-color: #EC6988;
+    background-color: #D61A46;
     color: #FBDFE6;
 }
