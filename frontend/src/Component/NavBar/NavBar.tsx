@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { logout } from '../../Actions/auth';
 import './NavBar.css'
 
-const NavBar = ({logout, isAuthenticated}) => {
+const NavBar = ({logout, isAuthenticated, user}) => {
     
     const [redirect, setRedirect] = useState(false);
 
@@ -24,8 +24,13 @@ const NavBar = ({logout, isAuthenticated}) => {
         </div>
     );
 
+    const userBar = () => (
+        <span id="message">Welcome {user.name}</span>
+    )
+
     const authLinks = () => (
         <div>
+            { (user !== null) ? userBar() : null }
             <button type="button" className='btn' onClick={logout_user}>Logout</button>
         </div>
     );
@@ -49,7 +54,8 @@ const NavBar = ({logout, isAuthenticated}) => {
 }
 
 const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated
+    isAuthenticated: state.auth.isAuthenticated,
+    user: state.auth.user
 });
 
 export default connect(mapStateToProps, {logout})(NavBar);

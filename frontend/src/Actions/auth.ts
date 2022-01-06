@@ -115,7 +115,6 @@ export const signup = (name: string, email: string, password: string, re_passwor
 
     try {
         const res = await axios.post('http://localhost:8000/auth/users/', body, config);
-
         dispatch({
             type: SIGNUP_SUCCESS,
             payload: res.data

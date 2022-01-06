@@ -21,6 +21,9 @@ class MainPage extends Component
             </div>
           </div>
         </div>
+        <figure>
+            <img src={"../global.png"} className="fa fa-globe" alt="globe image"></img>
+        </figure>
       </div>
     </div>
     );

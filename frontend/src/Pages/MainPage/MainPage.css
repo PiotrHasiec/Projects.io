@@ -1,6 +1,10 @@
 #Search{
-    width: 60%;
+   width: 60%;
     margin: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
 }
 
 #Search button{
@@ -8,6 +12,30 @@
     color: #FBDFE6;
 }
 
-#Search .input-group{
+#Search .card-body{
+    width: 60%;
+}
+
+#Search figure{
     width: 40%;
+    text-align: center;
+    height: auto;
+}
+
+img{
+    width: 80%;
+}
+
+.fa-globe{
+    -webkit-animation: spin 60.0s infinite linear;
+    -moz-animation: spin 60.0s infinite linear;
+    -o-animation: spin 60.0s infinite linear;
+}
+
+.fa-globe:before {
+    content: "\f0ac";
+    /* -webkit-animation: spin 60.0s infinite linear; */
+    -moz-animation: spin 60.0s infinite linear;
+    -o-animation: spin 60.0s infinite linear;
+    font-size: 15em;
 }
