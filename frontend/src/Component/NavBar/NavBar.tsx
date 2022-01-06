@@ -18,7 +18,9 @@ const NavBar = ({logout, isAuthenticated}) => {
             <Link to="/login" style={{ textDecoration: 'none' }}>
                         <button type="button" className='btn'>Sign in</button>
             </Link>
-            <button type="button" className='btn'>Sign up</button>
+            <Link to="/register" style={{ textDecoration: 'none' }}>
+                <button type="button" className='btn' id="singup">Sign up</button>
+            </Link>
         </div>
     );
 

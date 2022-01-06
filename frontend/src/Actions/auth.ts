@@ -6,7 +6,9 @@ import {
     USER_LOADED_FAIL,
     AUTHENTICATED_SUCCESS,
     AUTHENTICATED_FAIL,
-    LOGOUT
+    LOGOUT,
+    SIGNUP_SUCCESS,
+    SIGNUP_FAIL
 } from "./types"
 
 
@@ -22,7 +24,7 @@ export const load_user = () => async dispatch => {
         }; 
 
         try {
-            const res = await axios.get(`http://localhost:8000/auth/users/me/`, config);
+            const res = await axios.get('http://localhost:8000/auth/users/me/', config);
     
             dispatch({
                 type: USER_LOADED_SUCCESS,
@@ -52,7 +54,7 @@ export const checkAuthenticated = () => async dispatch => {
         const body = JSON.stringify({ token: localStorage.getItem('access') });
 
         try {
-            const res = await axios.post(`http://localhost:8000/auth/jwt/verify/`, body, config)
+            const res = await axios.post('http://localhost:8000/auth/jwt/verify/', body, config)
 
             if (res.data.code !== 'token_not_valid') {
                 dispatch({
@@ -77,7 +79,6 @@ export const checkAuthenticated = () => async dispatch => {
 };
 
 export const login = (email: string, password: string) => async dispatch => {
-    console.log("debugg2");
     const config = {
         headers: {
             'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ export const login = (email: string, password: string) => async dispatch => {
     const body = JSON.stringify({ email, password });
 
     try {
-        const res = await axios.post(`http://localhost:8000/auth/jwt/create/`, body, config);
+        const res = await axios.post('http://localhost:8000/auth/jwt/create/', body, config);
 
         dispatch({
             type: LOGIN_SUCCESS,
@@ -99,6 +100,29 @@ export const login = (email: string, password: string) => async dispatch => {
     } catch (err) {
         dispatch({
             type: LOGIN_FAIL
+        })
+    }
+};
+
+export const signup = (name: string, email: string, password: string, re_password: string) => async dispatch => {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const body = JSON.stringify({ name, email, password, re_password });
+
+    try {
+        const res = await axios.post('http://localhost:8000/auth/users/', body, config);
+
+        dispatch({
+            type: SIGNUP_SUCCESS,
+            payload: res.data
+        });
+    } catch (err) {
+        dispatch({
+            type: SIGNUP_FAIL
         })
     }
 };

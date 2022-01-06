@@ -3,17 +3,16 @@ import { Route, Navigate } from 'react-router-dom';
 import NavBar from "../../Component/NavBar/NavBar";
 import "./LoginPage.css";
 import { connect } from "react-redux";
-import { FC } from "react";
 import { login } from "../../Actions/auth";
 
 const LoginPage = ({login, isAuthenticated}) => {
-    const [formmData, setFormData] = useState({
+    const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
-    const { email, password } = formmData;
+    const { email, password } = formData;
 
-    const onChange = e => setFormData({ ...formmData, [e.target.name]: e.target.value });
+    const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const onSubmit = e => {
         e.preventDefault();
@@ -32,7 +31,7 @@ const LoginPage = ({login, isAuthenticated}) => {
                     <h3>Please sign in</h3>
                     <div className="input-group mb-3">
                         <form onSubmit={e => onSubmit(e)}>
-                        <input type="text" className="form-control" name="email" placeholder="Email" aria-label="Project name" aria-describedby="basic-addon2" value={email}
+                        <input type="text" className="form-control" name="email" pattern="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b" title="Email must be in standard email format" placeholder="Email" aria-label="Project name" aria-describedby="basic-addon2" value={email}
                         onChange={e => onChange(e)}/>
                         <input type="password" name="password" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2"  value={password}
                         onChange={e => onChange(e)}/>

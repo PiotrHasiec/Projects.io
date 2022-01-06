@@ -12,6 +12,7 @@ import LoginPage from './Pages/LoginPage/LoginPage';
 import Layout from "./hocs/Layout/Layout"
 import { Provider } from 'react-redux';
 import store from './store';
+import RegisterPage from './Pages/RegisterPage/RegisterPage';
 
 
 const routing = (
@@ -24,6 +25,7 @@ const routing = (
             <Route path="/Projects" element={<SearchProject />} /> 
             <Route path="/Projects/:id" element={<ProjectPage />} /> 
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </Layout>
       </Router>
