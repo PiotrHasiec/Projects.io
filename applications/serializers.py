@@ -1,17 +1,17 @@
 from rest_framework import serializers
-from users.models import CollaboratorsProject, Applications
+from users.models import CollaboratorsProject, Applications, Advertisements
 
 #Advertisment
 class AdvertismentAuthorizeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Advertisment
+        model = Advertisements
         fields = "__all__"
         
 class CollaboratorsProjectUnAuthorizeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Advertisment
+        model = Advertisements
         fields = ("idProject","idUser", "idPosition")   
-#CollaboratorsProject
+#CollaboratorsProject 
 class CollaboratorsProjectAuthorizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollaboratorsProject
