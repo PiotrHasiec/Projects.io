@@ -29,18 +29,19 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
         project_owner_id = project_item.idOwner
         Projects.objects.get(pk = ad_item.idProject)
         if user_id == project_owner_id or user_id == item.idUser:     
-            return Response({"Project": ApplicationsAuthorizeSerializer(item).data})
+            return Response( ApplicationsAuthorizeSerializer(item).data)
         return Response({"detail":"Błąd autoryzacji"})
 
-    def createApplitacion(self, request, **kwargs):
+   
+    def create(self, request, *args, **kwargs):
       data = request.data
       if data.get("idAdvertisement","") == "":
         return Response({"detail":"Brak idAdvertisement"})
       if data.get("description", "") == "":
         return Response({"detail":"Brak description"})
       p =Applications( idUser = request.user.id,
-      idAdvertisement=data.get("idAdvertisement"),
-      description=data.get("description")
+      idAdvertisement = int(data.get("idAdvertisement")),
+      description = data.get("description")
       )
       p.save()
       return Response({"detail":"Udało sie utworzyć zgłoszenie"})
@@ -71,7 +72,9 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
 
       #TO DO Wyświetl wszystkie zgłoszenia przyporządkowane do użytkownika który wysyła zapytanie
-      return Response()
+      data = request.data
+      Applications_ = Applications.objects.filter( idUser =request.user.id )
+      return Response(ApplicationsAuthorizeSerializer(Applications_,many = True).data)
         
     def get_queryset(self):
         return  Applications.objects.all()

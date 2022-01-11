@@ -29,3 +29,4 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
             request.POST.set("idAdvertisement",str(pk))
             return ApplicationsViewSet.create(self, request, *args, **kwargs)
     
+    
