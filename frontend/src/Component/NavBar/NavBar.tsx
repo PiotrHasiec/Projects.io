@@ -26,6 +26,9 @@ const NavBar = ({logout, isAuthenticated}) => {
 
     const authLinks = () => (
         <div>
+             <Link to="/projects/create" style={{ textDecoration: 'none' }}>
+                <button type="button" className='btn' >create project</button>
+            </Link>
             <button type="button" className='btn' onClick={logout_user}>Logout</button>
         </div>
     );
