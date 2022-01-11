@@ -55,7 +55,7 @@ class SearchProject extends Component{
                 <div className="card-body">
                     <h2 className="card-title">{project["Project"]["title"]}</h2>
                     <p className="card-text">Author: {project["Meneger"]}</p>
-                    <Link to={"/Projects/"+project["Project"]["id"]} style={{ textDecoration: 'none' }}>
+                    <Link to={"/Projects/"+project["Project"]["pk"]} style={{ textDecoration: 'none' }}>
                         <button className="btn btn-outline-secondary" type="button">Show</button>
                     </Link>
                 </div>)
