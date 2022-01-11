@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models.deletion import *
@@ -17,7 +18,6 @@ class UserAccountManager(BaseUserManager):
             raise ValueError('Nie podano hasła')
 
         email = self.normalize_email(email)
-       
         user=self.model(email=email)
         user.name = name
         user.set_password(password)
@@ -38,7 +38,7 @@ class Users(AbstractBaseUser,PermissionsMixin):
     idRole = ForeignKey('Roles', on_delete=SET_NULL, null=True)
     email = EmailField(unique=True, null=False)
     name = CharField(max_length=50, unique=True, null=False)
-    avatar = FilePathField(allow_folders=False, blank = True, null = True)
+    avatar = CharField(max_length=100,default = "./FileBase/aaa.bmp")
     description = TextField(max_length=255, blank=True, null=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2,default=0)
     is_active = models.BooleanField(default=True)

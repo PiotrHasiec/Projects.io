@@ -24,7 +24,7 @@ export const load_user = () => async dispatch => {
         }; 
 
         try {
-            const res = await axios.get('http://localhost:8000/auth/users/me/', config);
+            const res = await axios.get('http://localhost:8000/Users/api/Users/myData/', config);
     
             dispatch({
                 type: USER_LOADED_SUCCESS,
