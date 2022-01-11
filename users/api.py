@@ -1,3 +1,4 @@
+import os
 from rest_framework.decorators import action, permission_classes
 from .models import  Users, RatingUsers
 from rest_framework import response, viewsets, permissions
@@ -7,9 +8,7 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.AllowAny]
-    #queryset =  Users.objects.all()
-    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     serializer_class = UserSerializer
 
@@ -36,7 +35,6 @@ class UserViewSet(viewsets.ModelViewSet):
         return response.Response()
 
     def list(self, request, *args, **kwargs):
-      permission_classes = [permissions.AllowAny]
       sorting = request.GET.get('sort',"")
       name_contain =  request.GET.get('namecontain',"")
       desc_contain = request.GET.get('descecontain',"")
@@ -61,13 +59,23 @@ class UserViewSet(viewsets.ModelViewSet):
     #    return serializer.save(owner=self.request.user)
     @action(detail=True,methods=['POST','GET'])
     
-    def upload(self,request,pk=None, *args, **kwargs):
+    def extension(self, request):
+        name, extension = os.path.splitext(request.name)
+        return extension
+        
+    @action(detail=True,methods=['POST','GET'])
+    def upload_avatar(self,request,pk=None, *args, **kwargs):
       if request.method == 'POST':
-        filename = request.data.get('filename')
-        uploaded_file= request.FILES['document']
-        print(uploaded_file.size)
-        path = default_storage.save('Projects.io-main/FilesBase/'+filename, ContentFile(uploaded_file.read()))
-        print(path)
-      return response.Response()
+        #if(request.user.id == pk):
+          filename = request.data.get('filename')
+          uploaded_file= request.FILES['document']
+          name = UserViewSet.extension(self, uploaded_file)
+          if (uploaded_file.size < 65536):
+            if (name == ".jpg"):
+             
+              path = default_storage.save('Projects.io-main/FilesBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
+              request.user.avatar = path
+              return response.Response()
+      return response.Response({"detail":"wal się na ryj to nie jpg i D****** tez"}) 
 
     
