@@ -25,7 +25,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectAuthorizeSerializer
     @action(detail=True,methods=['GET,POST'])
     def createAdvertisment(self, request, pk=None):
-      if self.amOwner(self, request, pk=None):
+      if self.isUserOwner(self, request, pk=None):
         data =request.data
         idProject = pk
         Position = int(data.get("position"))
@@ -39,13 +39,21 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       else:
         return Response({"detail":"Błąd autoryzacji"})
 
-    @action(detail=True,methods=['GET,POST'])
+    @action(detail=True,methods=['GET','POST'])
     def amOwner(self, request, pk=None):
-      if Projects.objects.filter(pk = pk).first().idOwner == request.user.id:
+      if Projects.objects.filter(pk = pk).first().idOwner.id == request.user.id:
+        
         return Response("True")
       else:
         return Response("False")
         
+    def isUserOwner(self, request, pk=None):
+      if Projects.objects.filter(pk = pk).first().idOwner.id == request.user.id:
+        
+        return True
+      else:
+        return False
+
     def retrieve(self, request, pk=None):
         item = Projects.objects.get(pk = pk)
         return Response({"Project": ProjectAuthorizeSerializer(item).data, "Meneger": Users.objects.filter(pk = item.idOwner.pk).first().name})
@@ -146,6 +154,20 @@ class ProjectsViewSet(viewsets.ModelViewSet):
           if (uploaded_file.size < 104857600):
             if (name == ".zip" or name == ".rar"):
               path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().folder )+'/project'+name, ContentFile(uploaded_file.read()))
+              return Response({"detail":"Pomyślnie przesłano plik"})
+            return Response({"detail":"Nie poprawne rozszerzenie pliku"})
+          return Response({"detail":"Za duży plik"})
+        return Response({"detail":"Błąd autoryzacji"})
+
+    @action(detail=True,methods=['POST'])
+    def upload_project_presentation(self,request,pk=None, *args, **kwargs):
+      
+        if(request.user.id == pk):
+          uploaded_file= request.FILES['document']
+          name = ProjectsViewSet.extension(self, uploaded_file)
+          if (uploaded_file.size < 104857600):
+            if (name == ".zip" or name == ".rar"):
+              path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().presentation )+'/project'+name, ContentFile(uploaded_file.read()))
               return Response({"detail":"Pomyślnie przesłano plik"})
             return Response({"detail":"Nie poprawne rozszerzenie pliku"})
           return Response({"detail":"Za duży plik"})
