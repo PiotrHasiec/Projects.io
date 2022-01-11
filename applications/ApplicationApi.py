@@ -60,7 +60,7 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
           elif newstage =="PG":
             p.stage =  Projects.ProjectStages.PlayGround
           p.save()
-        return Response(ProjectAuthorizeSerializer(p).data)
+        return Response(ApplicationsAuthorizeSerializer(p).data)
 
           
 
@@ -87,7 +87,7 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
       
         if(request.user.id == pk):
           uploaded_file= request.FILES['document']
-          name = ProjectsViewSet.extension(self, uploaded_file)
+          name = ApplicationsViewSet.extension(self, uploaded_file)
           if (uploaded_file.size < 104857600):
             if (name == ".zip" or name == ".rar"):
 

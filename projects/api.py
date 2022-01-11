@@ -5,8 +5,7 @@ from django.http.response import JsonResponse
 #from rest_framework.decorators import permission_classes
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from users.models import Projects, RatingProject
-from users.models import Users
+from users.models import *
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
 from django.db.models import Avg
@@ -21,6 +20,24 @@ class ProjectsViewSet(viewsets.ModelViewSet):
    
 
     serializer_class = ProjectAuthorizeSerializer
+
+
+    serializer_class = ProjectAuthorizeSerializer
+    @action(detail=True,methods=['GET,POST'])
+    def createAdvertisment(self, request, pk=None):
+      if self.amOwner(self, request, pk=None):
+        data =request.data
+        idProject = pk
+        Position = int(data.get("position"))
+        description = data.get("description")
+        ad = Advertisements(idProject= idProject,idPosition = Positions.object.filter(name = Position).pk, description = description)
+        ad.save()
+        return Response({"detail":"Pomyślnie dodano Ogłoszenie"})
+
+        
+
+      else:
+        return Response({"detail":"Błąd autoryzacji"})
 
     @action(detail=True,methods=['GET,POST'])
     def amOwner(self, request, pk=None):
@@ -51,7 +68,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       os.makedirs("./FileBase/"+presentationpath)
       p =Projects( idOwner_id = request.user.id,title=data.get("title"),description=data.get("description"),folder=datapath,presentation =presentationpath)
       p.save()
-      return Response()
+      return Response({"pk":str(p.id)})
 
     def update(self, request, pk=None, *args, **kwargs):
         p = Projects.objects.filter(pk=pk).first()
@@ -128,11 +145,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
           name = ProjectsViewSet.extension(self, uploaded_file)
           if (uploaded_file.size < 104857600):
             if (name == ".zip" or name == ".rar"):
-
-              print(uploaded_file.size)
-              print(name)
               path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().folder )+'/project'+name, ContentFile(uploaded_file.read()))
-              print(path)
               return Response({"detail":"Pomyślnie przesłano plik"})
             return Response({"detail":"Nie poprawne rozszerzenie pliku"})
           return Response({"detail":"Za duży plik"})
