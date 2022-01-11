@@ -20,7 +20,7 @@ const LoginPage = ({login, isAuthenticated}) => {
     }
 
     if (isAuthenticated) {
-        return <Navigate replace to="/" />
+        return <Navigate to="/" />
     }
 
     return (
