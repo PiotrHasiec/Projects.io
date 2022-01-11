@@ -15,11 +15,12 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return  Users.objects.all()
 
-    @action(detail=True,methods=['POST','GET'])
-    def me(self, request, *args, **kwargs):
-        me = request.user.id
-        return response.Response(UserSerializer(me))
-        
+    @action(detail=False,methods=['POST','GET'])
+    def myData(self, request, *args, **kwargs):
+        me = request.user
+        print("ELO")
+        return response.Response(UserSerializer(me).data)
+
     @action(detail=True,methods=['POST','GET'])
     def mark(self, request,pk=None, **kwargs):
         permission_classes = [permissions.IsAuthenticated]

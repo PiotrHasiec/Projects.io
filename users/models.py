@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.db.models.deletion import *
@@ -17,9 +18,10 @@ class UserAccountManager(BaseUserManager):
             raise ValueError('Nie podano hasła')
 
         email = self.normalize_email(email)
-       
         user=self.model(email=email)
         user.name = name
+        os.makedirs("./FileBase/"+str(user.id))
+        user.avatar = "./FileBase/"+str(user.id)
         user.set_password(password)
         user.save()
         return user
@@ -27,6 +29,8 @@ class UserAccountManager(BaseUserManager):
         email = self.normalize_email(email)
         user=self.model(email=email)
         user.name = name
+        os.makedirs("./FileBase/"+str(user.id))
+        user.avatar = "./FileBase/"+str(user.id)
         user.set_password(password)
         user.is_staff =True
         user.is_superuser = True
