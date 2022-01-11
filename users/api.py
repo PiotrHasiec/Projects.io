@@ -16,6 +16,11 @@ class UserViewSet(viewsets.ModelViewSet):
         return  Users.objects.all()
 
     @action(detail=True,methods=['POST','GET'])
+    def me(self, request, *args, **kwargs):
+        me = request.user.id
+        return response.Response(UserSerializer(me))
+        
+    @action(detail=True,methods=['POST','GET'])
     def mark(self, request,pk=None, **kwargs):
         permission_classes = [permissions.IsAuthenticated]
         if request.method == 'POST':
@@ -71,9 +76,9 @@ class UserViewSet(viewsets.ModelViewSet):
           uploaded_file= request.FILES['document']
           name = UserViewSet.extension(self, uploaded_file)
           if (uploaded_file.size < 65536):
-            if (name == ".jpg"):
+            if (name == ".jpg" or name == ".bmp"):
              
-              path = default_storage.save('Projects.io-main/FilesBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
+              path = default_storage.save('Projects.io/FilesBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
               request.user.avatar = path
               return response.Response()
       return response.Response({"detail":"wal się na ryj to nie jpg i D****** tez"}) 
