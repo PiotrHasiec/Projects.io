@@ -11,6 +11,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
 from django.db.models import Avg
 from .serializers import *
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 
 class ProjectsViewSet(viewsets.ModelViewSet):
@@ -106,6 +108,28 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         
     def get_queryset(self):
         return  Projects.objects.all()
+
+    def extension(self, request):
+        name, extension = os.path.splitext(request.name)
+
+    @action(detail=True,methods=['POST'])
+    def upload_project_files(self,request,pk=None, *args, **kwargs):
+      
+        if(request.user.id == pk):
+          uploaded_file= request.FILES['document']
+          name = ProjectsViewSet.extension(self, uploaded_file)
+          if (uploaded_file.size < 104857600):
+            if (name == ".zip" or name == ".rar"):
+
+              print(uploaded_file.size)
+              print(name)
+              path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().folder )+'/project'+name, ContentFile(uploaded_file.read()))
+              print(path)
+              return Response({"detail":"Pomyślnie przesłano plik"})
+            return Response({"detail":"Nie poprawne rozszerzenie pliku"})
+          return Response({"detail":"Za duży plik"})
+        return Response({"detail":"Błąd autoryzacji"})
+      
 
    #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)
