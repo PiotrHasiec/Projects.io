@@ -2,7 +2,6 @@ import React, { Component, ReactNode, useState } from "react"
 import { Route, Navigate } from 'react-router-dom';
 import "./CreateProject.css";
 import { connect } from "react-redux";
-import { deepEqual } from "assert";
 
 const CreateProject = ({isAuthenticated, user}) => {
     const [formData, setFormData] = useState({
@@ -11,7 +10,7 @@ const CreateProject = ({isAuthenticated, user}) => {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-
+    const [idProject, setIdProject] = useState("");
     const { title, description } = formData;
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,6 +19,8 @@ const CreateProject = ({isAuthenticated, user}) => {
         e.preventDefault();
         postObject();
     }
+
+    
 
     const postObject = () => {
         return fetch('http://127.0.0.1:8000/Projects/api/Projects/', {
@@ -34,11 +35,18 @@ const CreateProject = ({isAuthenticated, user}) => {
           .then(response => response.json())
           .then(responseJson => {
             setLoading(true);
+            setIdProject(responseJson.pk);
           })
           .catch(error => {
             setLoading(false);
             setError(true);
           });
+    }
+
+    if(loading){
+        if(idProject !== ""){
+            return <Navigate replace to={"/Projects/"+idProject} />
+        }
     }
 
     if (!isAuthenticated) {

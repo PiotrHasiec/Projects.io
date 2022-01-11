@@ -23,7 +23,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
 
     serializer_class = ProjectAuthorizeSerializer
-    @action(detail=True,methods=['GET,POST'])
+    @action(detail=True,methods=['GET','POST'])
     def createAdvertisment(self, request, pk=None):
       if self.amOwner(self, request, pk=None):
         data =request.data
@@ -39,9 +39,9 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       else:
         return Response({"detail":"Błąd autoryzacji"})
 
-    @action(detail=True,methods=['GET,POST'])
+    @action(detail=True,methods=['GET','POST'])
     def amOwner(self, request, pk=None):
-      if Projects.objects.filter(pk = pk).first().idOwner == request.user.id:
+      if Projects.objects.filter(pk = pk).first().idOwner.id == request.user.id:
         return Response("True")
       else:
         return Response("False")
