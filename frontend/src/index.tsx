@@ -14,7 +14,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CreateProject from './Pages/CreateProject/CreateProject';
-
+import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
 
 
 const routing = (
@@ -24,11 +24,12 @@ const routing = (
         <Layout>
           <Routes>
             <Route path="/" element={<MainPage />} /> 
-            <Route path="/Projects" element={<SearchProject />} /> 
-            <Route path="/Projects/:id" element={<ProjectPage />} /> 
+            <Route path="/projects" element={<SearchProject />} /> 
+            <Route path="/projects/:id" element={<ProjectPage />} /> 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/projects/create" element={<CreateProject />} />
+            <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
           </Routes>
         </Layout>
       </Router>

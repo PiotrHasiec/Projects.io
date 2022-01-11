@@ -23,7 +23,6 @@ const RegisterPage = ({ signup, isAuthenticated }) => {
 
     const onSubmit = e => {
         e.preventDefault();
-        debugger;
         if (password === re_password) {
             signup(name, email, password, re_password)
         }
