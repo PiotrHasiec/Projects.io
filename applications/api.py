@@ -5,8 +5,7 @@ from django.http.response import JsonResponse
 #from rest_framework.decorators import permission_classes
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from users.models import Projects, RatingProject
-from users.models import Users
+from users.models import *
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
 from django.db.models import Avg
@@ -15,43 +14,45 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 
-class ProjectsViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    queryset =  Projects.objects.all()
+class ApplicationsViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    def get_queryset(self):
+      return  Applications.objects.all()
    
 
-    serializer_class = ProjectAuthorizeSerializer
-
-    @action(detail=True,methods=['GET,POST'])
-    def amOwner(self, request, pk=None):
-      if Projects.objects.filter(pk = pk).first().idOwner == request.user.id:
-        return Response("True")
-      else:
-        return Response("False")
-        
+    serializer_class = ApplicationsAuthorizeSerializer
     def retrieve(self, request, pk=None):
-        item = Projects.objects.get(pk = pk)
-        return Response({"Project": ProjectAuthorizeSerializer(item).data, "Meneger": Users.objects.filter(pk = item.idOwner.pk).first().name})
+        user = request.user
+        user_id =user.id
+        item = Applications.objects.get(pk = pk)
+        ad_item = Advertisements.objects.get(pk = item.idAdvertisement)
+        project_item = Projects.objects.get(pk = item.idOwner)
+        project_owner_id = project_item.idOwner
+        Projects.objects.get(pk = ad_item.idProject)
+        if user_id == project_owner_id or user_id == item.idUser:     
+            return Response({"Project": ApplicationsAuthorizeSerializer(item).data})
+        return Response({"detail":"Błąd autoryzacji"})
 
-    def byTitle(self, request, title = "", *args, **kwargs):
-      queryset =  Projects.objects.filter(title__contains=str(title))
-      return Response(ProjectAuthorizeSerializer(queryset, many = True).data)
 
    # @action(detail=True,methods=['DELETE'])
     def destroy(self, request,pk=None, **kwargs):
       Projects.objects.filter(pk=pk,idOwner_id =int(request.user.id)).delete()
       return Response()
 
-    def create(self, request, **kwargs):
+    def createApplitacion(self, request, **kwargs):
+      #TO DO tworzenie zgłoszenia 
       data = request.data
-      
-      datapath = str(request.user.id)+"/"+data.get("title")+"/"+"data"
-      presentationpath = str(request.user.id)+"/"+data.get("title")+"/"+"presentation"
-      os.makedirs("./FileBase/"+datapath)
-      os.makedirs("./FileBase/"+presentationpath)
-      p =Projects( idOwner_id = request.user.id,title=data.get("title"),description=data.get("description"),folder=datapath,presentation =presentationpath)
+      #{"idAdvertisement": "3", "description": "CHUJEMUJE"}
+      if data.get("idAdvertisement","") == "":
+        return Response({"detail":"Brak idAdvertisement"})
+      if data.get("description", "") == "":
+        return Response({"detail":"Brak description"})
+      p =Applications( idUser = request.user.id,
+      idAdvertisement=data.get("idAdvertisement"),
+      description=data.get("description")
+      )
       p.save()
-      return Response()
+      return Response({"detail":"Udało sie utworzyć zgłoszenie"})
 
     def update(self, request, pk=None, *args, **kwargs):
         p = Projects.objects.filter(pk=pk).first()
@@ -74,48 +75,15 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     def partial_update(self, request, pk=None, *args, **kwargs):
          return Response({"detail": "Niedozwolona metoda \"PATCH\"."})
           
-    @action(detail=True,methods=['POST'])
-    def mark(self, request,pk=None, **kwargs):
-        if request.method == 'POST':
-          data = request.data
-        
-        
-        
-          RatingProject.objects.update_or_create(idProject_id = int(pk),
-                                      idUser_id =int(request.user.id),
-                                      defaults = {'mark':  data.get("mark",None)} )
-
-
-          
-        mark =RatingProject.objects.filter(idProject_id = pk).aggregate(avg_mark = Avg('mark'))
-        Projects.objects.filter(pk = pk).update(averageRate = mark['avg_mark'])
-        return Response()
+    
 
     def list(self, request, *args, **kwargs):
 
-      sorting = request.GET.get('sort',"")
-      title_contain =  request.GET.get('titlecontain',"")
-      desc_contain = request.GET.get('descecontain',"")
-      up =  request.GET.get('up',"")
-      down =  request.GET.get('down',0)
-      queryset = Projects.objects.all()
-      if not title_contain == "":
-        queryset = queryset.filter(title__icontains=str(title_contain))
-      
-      if (not desc_contain ==""):
-          queryset = queryset.filter(decription__icontains=str(desc_contain))
-
-      if (not sorting == ""):
-        queryset = queryset.order_by(sorting)
-
-      if not up == "" and down =="": 
-        queryset = queryset[int(down):int(up)]
-
-      projects = [ {"Project": ProjectUnAuthorizeSerializer(item).data, "Meneger":Users.objects.filter(pk = item.idOwner.pk).first().name} for item in queryset ]
-      return Response(projects)
+      #TO DO Wyświetl wszystkie zgłoszenia przyporządkowane do użytkownika który wysyła zapytanie
+      return Response()
         
     def get_queryset(self):
-        return  Projects.objects.all()
+        return  Applications.objects.all()
 
     def extension(self, request):
         name, extension = os.path.splitext(request.name)
