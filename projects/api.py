@@ -28,11 +28,19 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       if self.isUserOwner(self, request, pk=None):
         data =request.data
         idProject = pk
-        Position = int(data.get("position"))
+        position_name = data.get("position")
+        Positions_collect = Positions.objects.filter(name = position_name)
+
+        if Positions_collect.count() == 0:
+          Position = Positions.create(name = position_name)
+        else:
+           Positions_collect.first()
+        Position.save()
+
         description = data.get("description")
-        ad = Advertisements(idProject= idProject,idPosition = Positions.object.filter(name = Position).pk, description = description)
+        ad = Advertisements(idProject_pk= idProject,idPosition = Position, description = description)
         ad.save()
-        return Response({"detail":"Pomyślnie dodano Ogłoszenie"})
+        return Response({"pk":str(ad.pk)})
 
         
 
