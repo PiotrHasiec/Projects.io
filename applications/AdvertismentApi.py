@@ -28,5 +28,8 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
         if pk == request.user.id:
             request.POST.set("idAdvertisement",str(pk))
             return ApplicationsViewSet.create(self, request, *args, **kwargs)
+    def destroy(self, request,pk = None, *args, **kwargs):
+        Advertisements.objects.filter(pk=pk,idOwner_id =int(request.user.id)).delete()
+        return  Response()
     
     
