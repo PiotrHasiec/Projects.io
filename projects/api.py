@@ -5,15 +5,15 @@ from django.http.response import JsonResponse
 #from rest_framework.decorators import permission_classes
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from users.models import Projects, RatingProject
-from users.models import Users
+from applications.AdvertismentApi import AdvertisementsViewSet
+from users.models import *
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
 from django.db.models import Avg
 from .serializers import *
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
+from applications.serializers import AdvertismentAuthorizeSerializer
 
 class ProjectsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -22,13 +22,53 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
     serializer_class = ProjectAuthorizeSerializer
 
-    @action(detail=True,methods=['GET,POST'])
+
+    serializer_class = ProjectAuthorizeSerializer
+
+    @action(detail=True,methods=['GET','POST'])
+    def getAdvertisments(self, request, pk=None):
+       return AdvertisementsViewSet.list_in_project(request, pk)
+
+
+    @action(detail=True,methods=['GET','POST'])
+    def createAdvertisment(self, request, pk=None):
+      if self.isUserOwner(request, pk):
+        data =request.data
+        idProject = int(pk)
+        position_name = data.get("position")
+        Positions_collect = Positions.objects.filter(name = position_name)
+
+        if Positions_collect.count() == 0:
+          Position = Positions(name = position_name)
+          Position.save()
+        else:
+           Position = Positions_collect.first()
+           
+
+        description = data.get("description")
+        ad = Advertisements(idProject_id= idProject,idPosition = Position, description = description)
+        ad.save()
+        return Response({"pk":str(ad.pk)})
+
+        
+
+      else:
+        return Response({"detail":"Błąd autoryzacji"})
+
+    @action(detail=True,methods=['GET','POST'])
     def amOwner(self, request, pk=None):
-      if Projects.objects.filter(pk = pk).first().idOwner == request.user.id:
+      if Projects.objects.filter(pk = pk).first().idOwner.id == request.user.id:
         return Response("True")
       else:
         return Response("False")
         
+    def isUserOwner(self, request, pk=None):
+      if Projects.objects.filter(pk = int(pk)).first().idOwner.id == request.user.id:
+        
+        return True
+      else:
+        return False
+
     def retrieve(self, request, pk=None):
         item = Projects.objects.get(pk = pk)
         return Response({"Project": ProjectAuthorizeSerializer(item).data, "Meneger": Users.objects.filter(pk = item.idOwner.pk).first().name})
@@ -51,7 +91,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       os.makedirs("./FileBase/"+presentationpath)
       p =Projects( idOwner_id = request.user.id,title=data.get("title"),description=data.get("description"),folder=datapath,presentation =presentationpath)
       p.save()
-      return Response()
+      return Response({"pk":str(p.id)})
 
     def update(self, request, pk=None, *args, **kwargs):
         p = Projects.objects.filter(pk=pk).first()
@@ -128,11 +168,21 @@ class ProjectsViewSet(viewsets.ModelViewSet):
           name = ProjectsViewSet.extension(self, uploaded_file)
           if (uploaded_file.size < 104857600):
             if (name == ".zip" or name == ".rar"):
-
-              print(uploaded_file.size)
-              print(name)
               path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().folder )+'/project'+name, ContentFile(uploaded_file.read()))
-              print(path)
+              return Response({"detail":"Pomyślnie przesłano plik"})
+            return Response({"detail":"Nie poprawne rozszerzenie pliku"})
+          return Response({"detail":"Za duży plik"})
+        return Response({"detail":"Błąd autoryzacji"})
+
+    @action(detail=True,methods=['POST'])
+    def upload_project_presentation(self,request,pk=None, *args, **kwargs):
+      
+        if(request.user.id == pk):
+          uploaded_file= request.FILES['document']
+          name = ProjectsViewSet.extension(self, uploaded_file)
+          if (uploaded_file.size < 104857600):
+            if (name == ".zip" or name == ".rar"):
+              path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().presentation )+'/project'+name, ContentFile(uploaded_file.read()))
               return Response({"detail":"Pomyślnie przesłano plik"})
             return Response({"detail":"Nie poprawne rozszerzenie pliku"})
           return Response({"detail":"Za duży plik"})

@@ -11,5 +11,7 @@ urlpatterns = [
   #  path('projekt/<id>/',projects, name = 'projekt'),
     path('',include('account.urls')),
     path('Projects/',include('projects.urls')),
-    path('Users/',include("users.urls"))
+    path('Users/',include("users.urls")),
+    path('Applications/',include("applications.urls")),
+    path('Advertisements/',include("advertisements.urls"))
 ]

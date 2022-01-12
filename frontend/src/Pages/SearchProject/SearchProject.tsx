@@ -1,7 +1,6 @@
 import { Component, ReactNode, useState } from "react"
 import { Link } from "react-router-dom";
 import { Card } from "reactstrap";
-import NavBar from "../../Component/NavBar/NavBar";
 
 export interface Project{
     id: number,
@@ -27,7 +26,7 @@ class SearchProject extends Component{
     }
     
     getObject(){
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/', {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/`, {
             method: 'GET',
             mode: 'cors',
             headers:{

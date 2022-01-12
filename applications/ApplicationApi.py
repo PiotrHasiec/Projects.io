@@ -15,6 +15,7 @@ from django.core.files.base import ContentFile
 
 class ApplicationsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
+    queryset = Applications.objects.all()
     def get_queryset(self):
       return  Applications.objects.all()
    
@@ -24,14 +25,21 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
         user = request.user
         user_id =user.id
         item = Applications.objects.get(pk = pk)
-        ad_item = Advertisements.objects.get(pk = item.idAdvertisement)
-        project_item = Projects.objects.get(pk = item.idOwner)
-        project_owner_id = project_item.idOwner
-        Projects.objects.get(pk = ad_item.idProject)
-        if user_id == project_owner_id or user_id == item.idUser:     
+        ad_item = Advertisements.objects.get(pk = item.idAdvertisement.id)
+        project_item = Projects.objects.get(pk = item.idOwner.id)
+        project_owner_id = project_item.idOwner.id
+        Projects.objects.get(pk = ad_item.idProject.id)
+        if user_id == project_owner_id or user_id == item.idUser.id:     
             return Response( ApplicationsAuthorizeSerializer(item).data)
         return Response({"detail":"Błąd autoryzacji"})
 
+    def create_in_advertisment(request,pk):
+      data = request.data
+      if data.get("description", "") == "":
+        return Response({"detail":"Brak description"})
+      p =Applications( idUser_id = request.user.id, idAdvertisement_id = int(pk),description = data.get("description"))
+      p.save()
+      return Response({"detail":"Udało sie utworzyć zgłoszenie"})
    
     def create(self, request, *args, **kwargs):
       data = request.data
@@ -47,31 +55,47 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
       return Response({"detail":"Udało sie utworzyć zgłoszenie"})
 
     def update(self, request, pk=None, *args, **kwargs):
-        p = Projects.objects.filter(pk=pk).first()
-        data = request.data
-        if(p.idOwner_id ==int(request.user.id)):
-          p.title = data.get("title",p.title)
-          p.description = data.get("description",p.description)
-          newstage =data.get("stage",p.stage)
-          if newstage =="BS":
-            p.stage =  Projects.ProjectStages.BRAINSTORM
-          elif newstage =="EB":
-            p.stage =  Projects.ProjectStages.EARLYBIRD
-          elif newstage =="PG":
-            p.stage =  Projects.ProjectStages.PlayGround
-          p.save()
-        return Response(ProjectAuthorizeSerializer(p).data)
+      pass
 
           
 
     def partial_update(self, request, pk=None, *args, **kwargs):
          return Response({"detail": "Niedozwolona metoda \"PATCH\"."})
           
-    
+    def destroy(self,  request, pk = None, *args, **kwargs):
+      # Usuwanie kiedy jest się właścicielem zgłoszenia
+        Applications.objects.filter(pk=pk,idOwner_id =int(request.user.id)).delete()
+        return  Response()
+
+    @action(detail=True,methods=['POST'])
+    def changeState(self, request,pk = None, *args, **kwargs):
+      #TODO Zmiana stanu zgłoszenia jeśli jest się właścicielem projektu do którego jest przypisane ogłoszenie do którego przypisane jest zgłoszenie
+        user = request.user
+        user_id =user.id
+
+        item = Applications.objects.get(pk = pk).first()
+        ad_item = Advertisements.objects.get(pk = item.idAdvertisement.id)
+        project_item = Projects.objects.get(pk = ad_item.idOwner.id)
+        
+        project_owner_id = project_item.idOwner.id
+        
+        if user_id == project_owner_id:   
+           state = request.data.get("acceptionState")
+           if state == "P" or "pending":
+             item.acceptionState = Applications.AcceptionStates.PENDING
+           elif state == "A" or "accepted":
+             item.acceptionState = Applications.AcceptionStates.ACCEPTED
+           elif state == "R" or "rejected":
+             item.acceptionState = Applications.AcceptionStates.REJECTED
+           else:
+             return Response({"detail":"Błąd autoryzacji"})
+           item.save()
+           return Response()
+        
 
     def list(self, request, *args, **kwargs):
 
-      #TO DO Wyświetl wszystkie zgłoszenia przyporządkowane do użytkownika który wysyła zapytanie
+      #TODO Wyświetl wszystkie zgłoszenia przyporządkowane do użytkownika który wysyła zapytanie
       data = request.data
       Applications_ = Applications.objects.filter( idUser =request.user.id )
       return Response(ApplicationsAuthorizeSerializer(Applications_,many = True).data)
@@ -79,27 +103,7 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return  Applications.objects.all()
 
-    def extension(self, request):
-        name, extension = os.path.splitext(request.name)
-
-    @action(detail=True,methods=['POST'])
-    def upload_project_files(self,request,pk=None, *args, **kwargs):
-      
-        if(request.user.id == pk):
-          uploaded_file= request.FILES['document']
-          name = ProjectsViewSet.extension(self, uploaded_file)
-          if (uploaded_file.size < 104857600):
-            if (name == ".zip" or name == ".rar"):
-
-              print(uploaded_file.size)
-              print(name)
-              path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().folder )+'/project'+name, ContentFile(uploaded_file.read()))
-              print(path)
-              return Response({"detail":"Pomyślnie przesłano plik"})
-            return Response({"detail":"Nie poprawne rozszerzenie pliku"})
-          return Response({"detail":"Za duży plik"})
-        return Response({"detail":"Błąd autoryzacji"})
-      
+   
 
    #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)

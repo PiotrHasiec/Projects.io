@@ -14,8 +14,8 @@ import { Provider } from 'react-redux';
 import store from './store';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CreateProject from './Pages/CreateProject/CreateProject';
-import UserPage from './Pages/UserPage/UserPage';
-import UserPropertiesPage from './Pages/UserPropertiesPage/UserPropertiesPage';
+import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
+import AddAplication from './Pages/AddAplication/AddAplication';
 
 
 const routing = (
@@ -24,6 +24,7 @@ const routing = (
       <Router>
         <Layout>
           <Routes>
+
             <Route path="/" element={<MainPage />} />
             <Route path="/Projects" element={<SearchProject />} />
             <Route path="/Projects/:id" element={<ProjectPage />} />
@@ -32,6 +33,8 @@ const routing = (
             <Route path="/projects/create" element={<CreateProject />} />
             <Route path="/user/:id" element={<UserPage />} />
             <Route path="/user/:id/edit" element={<UserPropertiesPage />} />
+            <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
+            <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>
         </Layout>
       </Router>
