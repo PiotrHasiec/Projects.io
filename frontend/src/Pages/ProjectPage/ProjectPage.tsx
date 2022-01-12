@@ -9,7 +9,9 @@ import Popup from 'reactjs-popup';
 const ProjectPage = ({isAuthenticated}) => {
 
     const [project, setProject] = useState([]);
+    const [advertisments, setAdvertisments] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingAdv, setLoadingAdv] = useState(true);
     const [error, setError] = useState(false);
     const [owner, setOwner] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
@@ -17,6 +19,7 @@ const ProjectPage = ({isAuthenticated}) => {
     useEffect(() => {
         getObject();
         isOwner();
+        getAdvertisments();
     }, []);
 
     const onClick = e =>{
@@ -24,7 +27,7 @@ const ProjectPage = ({isAuthenticated}) => {
     };
 
     const getObject = () => {
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/?format=json'.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/?format=json`.replace(":id", location[2]), {
             method: 'GET',
             mode: 'cors',
             headers:{
@@ -42,8 +45,29 @@ const ProjectPage = ({isAuthenticated}) => {
           });
     }
 
+    const getAdvertisments = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/getAdvertisments/`.replace(":id", location[2]), {
+            method: 'GET',
+            mode: 'cors',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            }
+        })
+          .then(response => response.json())
+          .then(responseJson => {
+            setAdvertisments(responseJson);
+            console.log(responseJson);
+            setLoadingAdv(false);
+          })
+          .catch(error => {
+            setLoadingAdv(false);
+            //setError(true);
+          });
+    }
+
     const isOwner = () => {
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/amOwner/?format=json'.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/amOwner/?format=json`.replace(":id", location[2]), {
             method: 'POST',
             mode: 'cors',
             headers:{
@@ -63,7 +87,7 @@ const ProjectPage = ({isAuthenticated}) => {
     }
 
     const deleteObject = () => {
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/'.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/`.replace(":id", location[2]), {
             method: 'DELETE',
             mode: 'cors',
             headers:{
@@ -132,7 +156,7 @@ const ProjectPage = ({isAuthenticated}) => {
                                 </td>
                             </tr> 
                             }
-                             { isAuthenticated && !owner &&
+                             { isAuthenticated && owner &&
                             <tr>
                                 <td>
                                     <Link to={"/projects/:id/advisements/create".replace(":id", location[2])}>
@@ -145,7 +169,19 @@ const ProjectPage = ({isAuthenticated}) => {
                     </h4>
                 </div>
             </div >
-                </div>
+            <div>
+                { !loadingAdv &&  advertisments.map(advertisment => 
+                    <div>
+                        <h1>{advertisment["namePosition"]}</h1>
+                        <p>{advertisment["description"]}</p>
+                        <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
+                                        <button className="btn btn-primary" >Add application</button>
+                                    </Link>
+                    </div>
+                    )  
+                }
+            </div>
+        </div>
             )}
             {error && <div>Error message</div>}
            

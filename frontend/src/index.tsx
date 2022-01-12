@@ -15,7 +15,7 @@ import store from './store';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CreateProject from './Pages/CreateProject/CreateProject';
 import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
-
+import AddAplication from './Pages/AddAplication/AddAplication';
 
 const routing = (
   <div>
@@ -30,6 +30,7 @@ const routing = (
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/projects/create" element={<CreateProject />} />
             <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
+            <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>
         </Layout>
       </Router>

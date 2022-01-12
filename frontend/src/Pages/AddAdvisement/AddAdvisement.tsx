@@ -23,7 +23,7 @@ const AddAdvisement = ({isAuthenticated, user}) => {
     
 
     const postObject = () => {
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/createAdvertisment/'.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/createAdvertisment/`.replace(":id", location[2]), {
             method: 'POST',
             mode: 'cors',
             headers:{
