@@ -1,7 +1,7 @@
 import React, { Component, ReactNode, useState, useEffect } from "react"
 import NavBar from "../../Component/NavBar/NavBar";
 import "./ProjectPage.css"
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
 import Popup from 'reactjs-popup';
 
@@ -9,14 +9,17 @@ import Popup from 'reactjs-popup';
 const ProjectPage = ({isAuthenticated}) => {
 
     const [project, setProject] = useState([]);
+    const [advertisments, setAdvertisments] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [loadingAdv, setLoadingAdv] = useState(true);
     const [error, setError] = useState(false);
     const [owner, setOwner] = useState(false);
     const [isDeleted, setIsDeleted] = useState(false);
-
+    const location = window.location.pathname.split("/");
     useEffect(() => {
         getObject();
         isOwner();
+        getAdvertisments();
     }, []);
 
     const onClick = e =>{
@@ -24,9 +27,7 @@ const ProjectPage = ({isAuthenticated}) => {
     };
 
     const getObject = () => {
-        const location = window.location.pathname.split("/");
-        
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/?format=json'.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/?format=json`.replace(":id", location[2]), {
             method: 'GET',
             mode: 'cors',
             headers:{
@@ -44,9 +45,29 @@ const ProjectPage = ({isAuthenticated}) => {
           });
     }
 
+    const getAdvertisments = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/getAdvertisments/`.replace(":id", location[2]), {
+            method: 'GET',
+            mode: 'cors',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            }
+        })
+          .then(response => response.json())
+          .then(responseJson => {
+            setAdvertisments(responseJson);
+            console.log(responseJson);
+            setLoadingAdv(false);
+          })
+          .catch(error => {
+            setLoadingAdv(false);
+            //setError(true);
+          });
+    }
+
     const isOwner = () => {
-        const location = window.location.pathname.split("/");
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/amOwner/?format=json'.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/amOwner/?format=json`.replace(":id", location[2]), {
             method: 'POST',
             mode: 'cors',
             headers:{
@@ -56,7 +77,8 @@ const ProjectPage = ({isAuthenticated}) => {
         })
           .then(response => response.json())
           .then(responseJson => {
-            setOwner(true);
+            if(responseJson === "True")
+                setOwner(true);
             //setLoading(false);
           })
           .catch(error => {
@@ -65,8 +87,7 @@ const ProjectPage = ({isAuthenticated}) => {
     }
 
     const deleteObject = () => {
-        const location = window.location.pathname.split("/");
-        return fetch('http://127.0.0.1:8000/Projects/api/Projects/:id/'.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/`.replace(":id", location[2]), {
             method: 'DELETE',
             mode: 'cors',
             headers:{
@@ -135,11 +156,32 @@ const ProjectPage = ({isAuthenticated}) => {
                                 </td>
                             </tr> 
                             }
+                             { isAuthenticated && owner &&
+                            <tr>
+                                <td>
+                                    <Link to={"/projects/:id/advisements/create".replace(":id", location[2])}>
+                                        <button className="btn btn-primary" >Add advisement</button>
+                                    </Link>
+                                </td>
+                            </tr> 
+                            }
                         </table>
                     </h4>
                 </div>
             </div >
-                </div>
+            <div>
+                { !loadingAdv &&  advertisments.map(advertisment => 
+                    <div>
+                        <h1>{advertisment["namePosition"]}</h1>
+                        <p>{advertisment["description"]}</p>
+                        <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
+                                        <button className="btn btn-primary" >Add application</button>
+                                    </Link>
+                    </div>
+                    )  
+                }
+            </div>
+        </div>
             )}
             {error && <div>Error message</div>}
            
