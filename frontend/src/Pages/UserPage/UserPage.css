@@ -1,0 +1,97 @@
+#Widget{
+    width: 75%;
+    margin: auto;
+    margin-top: 1em;
+}
+
+#Widget h1{
+    color: #FBDFE6;
+    margin-left: 20px;
+}
+
+#Profile-card {
+    border-radius: 25px;
+    background: #D61A46;
+    padding: 20px;
+    width: 50%;
+    float: left;
+    margin: 0.5%;
+    
+}
+
+#Profile-card img{
+    background: #919191;
+    width: 255px;
+    height: 255px;
+    float: left;
+    border: #FBDFE6;
+    border-style: solid;
+    border-radius: 25px;
+    margin-left: 20px;
+}
+
+#Name-card{
+    margin-left: 10%;
+    margin-top: 50px;
+    float: left;
+}
+
+#About-field{
+    width: 100%;
+    float: left;
+    padding: 20px;
+    color: white;
+}
+
+#About-field h4{
+   margin-left: 20px;
+}
+
+#About-text{
+    border-radius: 25px;
+    border: #FBDFE6;
+    border-style: solid;
+    padding: 20px;
+}
+
+#Details-card {
+    border-radius: 25px;
+    background: #D61A46;
+    padding: 20px;
+    width: 30%;
+    float: left;
+    margin: 0.5%;
+}
+
+#Details-card table{
+    border-collapse: separate;
+    border-spacing: 20px;
+}
+
+#Details-card h4{
+    color: white;
+}
+
+#Owner-exclusive {
+    border-radius: 25px;
+    background: #D61A46;
+    padding: 20px;
+    width: 15%;
+    float: left;
+    margin: 0.5%;
+    text-align: center;
+}
+
+#Owner-exclusive button {
+    width: 95%;
+    height: 50px;
+    margin: 5%;
+    background-color: #EC6988;
+    border: #fff 1px solid;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    border-radius: 18px;
+}
