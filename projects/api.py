@@ -27,7 +27,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
     @action(detail=True,methods=['GET','POST'])
     def getAdvertisments(self, request, pk=None):
-       return AdvertisementsViewSet.list_in_project(request, pk=None)
+       return AdvertisementsViewSet.list_in_project(request, pk)
 
 
     @action(detail=True,methods=['GET','POST'])

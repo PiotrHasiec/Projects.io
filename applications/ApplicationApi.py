@@ -15,6 +15,7 @@ from django.core.files.base import ContentFile
 
 class ApplicationsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
+    queryset = Applications.objects.all()
     def get_queryset(self):
       return  Applications.objects.all()
    
@@ -32,6 +33,13 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
             return Response( ApplicationsAuthorizeSerializer(item).data)
         return Response({"detail":"Błąd autoryzacji"})
 
+    def create_in_advertisment(request,pk):
+      data = request.data
+      if data.get("description", "") == "":
+        return Response({"detail":"Brak description"})
+      p =Applications( idUser_id = request.user.id, idAdvertisement_id = int(pk),description = data.get("description"))
+      p.save()
+      return Response({"detail":"Udało sie utworzyć zgłoszenie"})
    
     def create(self, request, *args, **kwargs):
       data = request.data
@@ -64,20 +72,26 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
       #TODO Zmiana stanu zgłoszenia jeśli jest się właścicielem projektu do którego jest przypisane ogłoszenie do którego przypisane jest zgłoszenie
         user = request.user
         user_id =user.id
-        item = Projects.objects.get(pk = pk)
+
+        item = Applications.objects.get(pk = pk).first()
         ad_item = Advertisements.objects.get(pk = item.idAdvertisement.id)
-        app_item = Applications.objects.get(pk = ad_item.idApplication.id)
-        project_owner_id = item.idOwner.id
-        Projects.objects.get(pk = ad_item.idProject.id)
-        if user_id == project_owner_id:     
-            return Response( ApplicationsAuthorizeSerializer(item).data)
-        return Response({"detail":"Błąd autoryzacji"})
-        #item = Applications.objects.get(pk = pk)
-        #ad_item = Advertisements.objects.get(pk = item.idAdvertisement.id)
-        #project_item = Projects.objects.get(pk = item.idOwner.id)
-        #project_owner_id = project_item.idOwner.id
-        #Projects.objects.get(pk = ad_item.idProject.id)
-        return  Response()
+        project_item = Projects.objects.get(pk = ad_item.idOwner.id)
+        
+        project_owner_id = project_item.idOwner.id
+        
+        if user_id == project_owner_id:   
+           state = request.data.get("acceptionState")
+           if state == "P" or "pending":
+             item.acceptionState = Applications.AcceptionStates.PENDING
+           elif state == "A" or "accepted":
+             item.acceptionState = Applications.AcceptionStates.ACCEPTED
+           elif state == "R" or "rejected":
+             item.acceptionState = Applications.AcceptionStates.REJECTED
+           else:
+             return Response({"detail":"Błąd autoryzacji"})
+           item.save()
+           return Response()
+        
 
     def list(self, request, *args, **kwargs):
 

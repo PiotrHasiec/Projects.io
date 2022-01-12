@@ -1,5 +1,6 @@
 import os
-# from ApplicationApi import ApplicationsViewSet
+from .ApplicationApi import ApplicationsViewSet
+
 from sys import path
 from django.db import models
 from django.http.response import JsonResponse
@@ -17,17 +18,18 @@ from django.core.files.base import ContentFile
 class AdvertisementsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = AdvertismentAuthorizeSerializer
+    queryset = Advertisements.objects.all()
     def get_queryset(self):
       return  Advertisements.objects.all()
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
-    # @action(detail=True,methods=['POST'])
-    # def createApplication(self, request,pk = None, *args, **kwargs):
-    #     if pk == request.user.id:
-    #         request.POST.set("idAdvertisement",str(pk))
-    #         return ApplicationsViewSet.create(self, request, *args, **kwargs)
+    @action(detail=True,methods=['POST'])
+    def createApplication(self, request,pk = None, *args, **kwargs):
+        #if pk == request.user.id:
+            return ApplicationsViewSet.create_in_advertisment(request,str(pk))
+        #return Response({"detail":"Błąd autoryzacji"})
 
     def list_in_project(request,pk = None):
         advertisements = Advertisements.objects.filter(idProject_id = pk)
@@ -39,6 +41,12 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
                         }for item in advertisements]
 
         return Response(toResponse)
+
+    def closeAdvertisment(advertismentId, userId,projectId,positionId):
+        collaborator = CollaboratorsProject(idProject = projectId, idUser  = userId, idPosition = positionId)
+        collaborator.save()
+        Advertisements.objects.filter(pk=advertismentId).delete()
+
     def destroy(self, request,pk = None, *args, **kwargs):
         Advertisements.objects.filter(pk=pk,idOwner_id =int(request.user.id)).delete()
         return  Response()

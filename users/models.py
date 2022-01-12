@@ -65,7 +65,7 @@ class Users(AbstractBaseUser,PermissionsMixin):
 class Applications(models.Model):
     idAdvertisement = ForeignKey('Advertisements', on_delete=CASCADE, null=False)
     description = TextField(max_length=255)
-    idUser = ForeignKey('Users', on_delete=CASCADE, null=False)
+    idUser = ForeignKey('Users', on_delete=CASCADE, null=False, default= 1)
     
     class AcceptionStates(TextChoices):
         PENDING = 'P', 'pending'
