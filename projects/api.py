@@ -5,6 +5,7 @@ from django.http.response import JsonResponse
 #from rest_framework.decorators import permission_classes
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from applications.AdvertismentApi import AdvertisementsViewSet
 from users.models import *
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
@@ -12,7 +13,7 @@ from django.db.models import Avg
 from .serializers import *
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
+from applications.serializers import AdvertismentAuthorizeSerializer
 
 class ProjectsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -23,22 +24,29 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
 
     serializer_class = ProjectAuthorizeSerializer
+
+    @action(detail=True,methods=['GET','POST'])
+    def getAdvertisments(self, request, pk=None):
+       return AdvertisementsViewSet.list_in_project(request, pk=None)
+
+
     @action(detail=True,methods=['GET','POST'])
     def createAdvertisment(self, request, pk=None):
-      if self.isUserOwner(self, request, pk=None):
+      if self.isUserOwner(request, pk):
         data =request.data
-        idProject = pk
+        idProject = int(pk)
         position_name = data.get("position")
         Positions_collect = Positions.objects.filter(name = position_name)
 
         if Positions_collect.count() == 0:
-          Position = Positions.create(name = position_name)
+          Position = Positions(name = position_name)
+          Position.save()
         else:
-           Positions_collect.first()
-        Position.save()
+           Position = Positions_collect.first()
+           
 
         description = data.get("description")
-        ad = Advertisements(idProject_pk= idProject,idPosition = Position, description = description)
+        ad = Advertisements(idProject_id= idProject,idPosition = Position, description = description)
         ad.save()
         return Response({"pk":str(ad.pk)})
 
@@ -55,7 +63,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         return Response("False")
         
     def isUserOwner(self, request, pk=None):
-      if Projects.objects.filter(pk = pk).first().idOwner.id == request.user.id:
+      if Projects.objects.filter(pk = int(pk)).first().idOwner.id == request.user.id:
         
         return True
       else:

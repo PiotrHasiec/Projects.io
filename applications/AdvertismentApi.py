@@ -1,5 +1,5 @@
 import os
-from ApplicationApi import ApplicationsViewSet
+# from ApplicationApi import ApplicationsViewSet
 from sys import path
 from django.db import models
 from django.http.response import JsonResponse
@@ -23,11 +23,22 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
-    @action(detail=True,methods=['POST'])
-    def createApplication(self, request,pk = None, *args, **kwargs):
-        if pk == request.user.id:
-            request.POST.set("idAdvertisement",str(pk))
-            return ApplicationsViewSet.create(self, request, *args, **kwargs)
+    # @action(detail=True,methods=['POST'])
+    # def createApplication(self, request,pk = None, *args, **kwargs):
+    #     if pk == request.user.id:
+    #         request.POST.set("idAdvertisement",str(pk))
+    #         return ApplicationsViewSet.create(self, request, *args, **kwargs)
+
+    def list_in_project(request,pk = None):
+        advertisements = Advertisements.objects.filter(idProject_id = pk)
+        toResponse = [ {"nameProject": item.idProject.title, 
+                        "namePosition":item.idPosition.name,
+                        "description":item.description,
+                        "idAdvertisment":item.id,
+                        "idProject":item.idProject.id,
+                        }for item in advertisements]
+
+        return Response(toResponse)
     def destroy(self, request,pk = None, *args, **kwargs):
         Advertisements.objects.filter(pk=pk,idOwner_id =int(request.user.id)).delete()
         return  Response()
