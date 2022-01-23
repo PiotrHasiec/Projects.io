@@ -38,7 +38,7 @@ class Users(AbstractBaseUser,PermissionsMixin):
     idRole = ForeignKey('Roles', on_delete=SET_NULL, null=True)
     email = EmailField(unique=True, null=False)
     name = CharField(max_length=50, unique=True, null=False)
-    avatar = CharField(max_length=100,default = "./FileBase/aaa.bmp")
+    avatar = CharField(max_length=100,default = "./frontend/public/FileBase/aaa.bmp")
     description = TextField(max_length=255, blank=True, null=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2,default=0)
     is_active = models.BooleanField(default=True)
@@ -124,8 +124,8 @@ class Projects(models.Model):
 
     stage = CharField(max_length=255, choices=ProjectStages.choices, default=ProjectStages.BRAINSTORM, null=False)
     description = TextField(max_length=255, null=False)
-    folder = FilePathField(path = "./FilesBase",allow_folders=True)
-    presentation = FilePathField(path = "./FilesBase",allow_folders=True)
+    folder = FilePathField(path = "./frontend/public/FileBase/",allow_folders=True)
+    presentation = FilePathField(path = "./frontend/public/FileBase/",allow_folders=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2, default=0)
 
     def __str__(self) -> str:

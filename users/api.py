@@ -20,6 +20,15 @@ class UserViewSet(viewsets.ModelViewSet):
         me = request.user
         return response.Response(UserSerializer(me).data)
 
+
+    def retrieve(self, request, pk=None):
+        item = Users.objects.get(pk = pk)
+        if request.user.id == int(pk):
+          return response.Response({"User":UserSerializer(item).data,"isOwner":"True"})
+        else:
+          return response.Response({"User":OtherUserSerializer(item).data,"isOwner":"False"})
+
+
     @action(detail=True,methods=['POST'])
     def mark(self, request,pk=None, **kwargs):
         if request.method == 'POST':
@@ -59,7 +68,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)
-    @action(detail=True,methods=['POST','GET'])
+
     
     def extension(self, request):
         name, extension = os.path.splitext(request.name)
@@ -75,7 +84,7 @@ class UserViewSet(viewsets.ModelViewSet):
           if (uploaded_file.size < 65536):
             if (name == ".jpg" or name == ".bmp"):
              
-              path = default_storage.save('Projects.io/FilesBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
+              path = default_storage.save('./frontend/public/FileBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
               request.user.avatar = path
               return response.Response()
       return response.Response({"detail":"nieobsługiany typ pliku"}) 
