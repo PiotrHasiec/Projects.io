@@ -16,7 +16,8 @@ import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CreateProject from './Pages/CreateProject/CreateProject';
 import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
 import AddAplication from './Pages/AddAplication/AddAplication';
-
+import UserPage from './Pages/UserPage/UserPage';
+import UserPropertiesPage from './Pages/UserPropertiesPage/UserPropertiesPage';
 
 const routing = (
   <div>
