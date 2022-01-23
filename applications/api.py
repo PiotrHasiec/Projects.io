@@ -5,6 +5,8 @@ from django.http.response import JsonResponse
 #from rest_framework.decorators import permission_classes
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from projects.api import ProjectsViewSet
+from projects.serializers import *
 from users.models import *
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
@@ -99,7 +101,7 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
 
               print(uploaded_file.size)
               print(name)
-              path = default_storage.save('Projects.io-main/'+str( Projects.objects.filter(pk = pk).first().folder )+'/project'+name, ContentFile(uploaded_file.read()))
+              path = default_storage.save(str( Projects.objects.filter(pk = pk).first().folder )+'/project'+name, ContentFile(uploaded_file.read()))
               print(path)
               return Response({"detail":"Pomyślnie przesłano plik"})
             return Response({"detail":"Nie poprawne rozszerzenie pliku"})
