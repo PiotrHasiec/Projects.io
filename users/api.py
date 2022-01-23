@@ -20,6 +20,15 @@ class UserViewSet(viewsets.ModelViewSet):
         me = request.user
         return response.Response(UserSerializer(me).data)
 
+
+    def retrieve(self, request, pk=None):
+        item = Users.objects.get(pk = pk)
+        if request.user.id == int(pk):
+          return response.Response(UserSerializer(item).data)
+        else:
+          return response.Response(OtherUserSerializer(item).data)
+
+
     @action(detail=True,methods=['POST'])
     def mark(self, request,pk=None, **kwargs):
         if request.method == 'POST':
@@ -59,7 +68,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)
-    @action(detail=True,methods=['POST','GET'])
+
     
     def extension(self, request):
         name, extension = os.path.splitext(request.name)
