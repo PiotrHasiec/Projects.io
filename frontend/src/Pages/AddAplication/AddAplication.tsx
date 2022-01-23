@@ -22,7 +22,7 @@ const AddAplication = ({isAuthenticated, user}) => {
     
 
     const postObject = () => {
-        return fetch(`http://localhost:41179/Advertisements/api/Advertisment/:id/createApplication/`.replace(":id", location[2]), {
+        return fetch(`http://localhost:8000/Advertisements/api/Advertisment/:id/createApplication/`.replace(":id", location[2]), {
             method: 'POST',
             mode: 'cors',
             headers:{

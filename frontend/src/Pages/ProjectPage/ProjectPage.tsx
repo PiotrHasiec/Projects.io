@@ -3,7 +3,7 @@ import NavBar from "../../Component/NavBar/NavBar";
 import "./ProjectPage.css"
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
-import Popup from 'reactjs-popup';
+import CustomPopup from "../../Component/CustomPopup/CustomPopup";
 
 
 const ProjectPage = ({isAuthenticated}) => {
@@ -174,9 +174,9 @@ const ProjectPage = ({isAuthenticated}) => {
                     <div>
                         <h1>{advertisment["namePosition"]}</h1>
                         <p>{advertisment["description"]}</p>
-                        <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
+                        { !owner && <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
                                         <button className="btn btn-primary" >Add application</button>
-                                    </Link>
+                                    </Link>}                        
                     </div>
                     )  
                 }

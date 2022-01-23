@@ -1,11 +1,14 @@
-import { Component, ReactNode } from "react"
+import { Component, ReactNode, useState } from "react"
 import { Link } from "react-router-dom";
 import NavBar from "../../Component/NavBar/NavBar";
-import "./MainPage.css"
+import CustomPopup from "../../Component/CustomPopup/CustomPopup";
+import "./MainPage.css";
+//import PropTypes from "prop-types";
 
-class MainPage extends Component
+
+const MainPage = () =>
 {
-  render(): ReactNode {
+
     return(
       <div>
       <div id="Search" className="card">
@@ -27,7 +30,6 @@ class MainPage extends Component
       </div>
     </div>
     );
-  }
 }
 
 
