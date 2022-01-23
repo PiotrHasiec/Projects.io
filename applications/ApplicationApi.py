@@ -100,18 +100,6 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
       Applications_ = Applications.objects.filter( idUser =request.user.id )
       return Response(ApplicationsAuthorizeSerializer(Applications_,many = True).data)
         
-    def get_queryset(self):
-        return  Applications.objects.all()
 
    
 
-   #def perform_create(self, serializer):
-    #    return serializer.save(owner=self.request.user)
-
-
-
-#class ProjectViewSet(viewsets.ModelViewSet):
- #   permission_classes = [permissions.AllowAny]
- #   queryset =  Projects.objects.get(pk = id)
-
- #   serializer_class = ProjectSerializer
