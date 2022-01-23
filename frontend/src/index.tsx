@@ -33,7 +33,7 @@ const routing = (
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/projects/create" element={<CreateProject />} />
             <Route path="/user/:id" element={<UserPage />} />
-            <Route path="/user/:id/edit" element={<UserPropertiesPage />} />
+            <Route path="/user/edit" element={<UserPropertiesPage />} />
             <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
             <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>

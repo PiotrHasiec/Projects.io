@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../../Actions/auth';
@@ -25,13 +25,21 @@ const NavBar = ({logout, isAuthenticated, user}) => {
     );
 
     const userBar = () => (
-        <span id="message">Welcome {user.name}</span>
+        <Fragment>
+            <span id="message">Welcome {user.name}</span>
+            <Link to={"/user/:id".replace(":id", user.id) } style={{ textDecoration: 'none' }}>
+                <button type="button" className='btn' >my profile</button>
+            </Link>
+        </Fragment>
+        
     )
 
-    const authLinks = () => (
+    const authLinks = () => ( 
         <div>
             { (user !== null) ? userBar() : null }
-             <Link to="/projects/create" style={{ textDecoration: 'none' }}>
+            
+ 
+            <Link to="/" style={{ textDecoration: 'none' }}>
                 <button type="button" className='btn' >create project</button>
             </Link>
             <button type="button" className='btn' onClick={logout_user}>Logout</button>
