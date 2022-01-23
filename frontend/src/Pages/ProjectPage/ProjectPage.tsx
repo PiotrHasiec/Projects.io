@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import CustomPopup from "../../Component/CustomPopup/CustomPopup";
 
 
+
 const ProjectPage = ({isAuthenticated}) => {
 
     const [project, setProject] = useState([]);
@@ -64,6 +65,7 @@ const ProjectPage = ({isAuthenticated}) => {
             setLoadingAdv(false);
             //setError(true);
           });
+
     }
 
     const isOwner = () => {
@@ -106,6 +108,7 @@ const ProjectPage = ({isAuthenticated}) => {
     if(isDeleted){
         return <Navigate replace to="/" />
     }
+
 
     return (
         <div>

@@ -17,18 +17,22 @@ import CreateProject from './Pages/CreateProject/CreateProject';
 import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
 import AddAplication from './Pages/AddAplication/AddAplication';
 
+
 const routing = (
   <div>
     <Provider store={store}>
       <Router>
         <Layout>
           <Routes>
-            <Route path="/" element={<MainPage />} /> 
-            <Route path="/projects" element={<SearchProject />} /> 
-            <Route path="/projects/:id" element={<ProjectPage />} /> 
+
+            <Route path="/" element={<MainPage />} />
+            <Route path="/Projects" element={<SearchProject />} />
+            <Route path="/Projects/:id" element={<ProjectPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/projects/create" element={<CreateProject />} />
+            <Route path="/user/:id" element={<UserPage />} />
+            <Route path="/user/:id/edit" element={<UserPropertiesPage />} />
             <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
             <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>

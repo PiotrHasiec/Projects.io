@@ -2,7 +2,7 @@ import os
 from rest_framework.decorators import action, permission_classes
 from .models import  Users, RatingUsers
 from rest_framework import response, viewsets, permissions
-from .serializers import UserSerializer
+from .serializers import *
 from django.db.models import Avg
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
@@ -18,18 +18,14 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=False,methods=['POST','GET'])
     def myData(self, request, *args, **kwargs):
         me = request.user
-        print("ELO")
         return response.Response(UserSerializer(me).data)
 
-    @action(detail=True,methods=['POST','GET'])
+    @action(detail=True,methods=['POST'])
     def mark(self, request,pk=None, **kwargs):
-        permission_classes = [permissions.IsAuthenticated]
         if request.method == 'POST':
           data = request.POST
-        elif request.method == 'GET':
-          data = request.GET
-        
-
+        #request.user.id
+        #if 
           RatingUsers.objects.update_or_create( idRatedUser_id = int(pk),
                                       idUser_id =int(data.get("idUser",None)),
                                       defaults = {'mark':  data.get("mark",None)} )
@@ -59,7 +55,7 @@ class UserViewSet(viewsets.ModelViewSet):
         queryset = queryset[:int(count)]
 
      
-      return response.Response(UserSerializer(queryset,many = True).data)
+      return response.Response(OtherUserSerializer(queryset,many = True).data)
 
     #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)
@@ -82,6 +78,6 @@ class UserViewSet(viewsets.ModelViewSet):
               path = default_storage.save('Projects.io/FilesBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
               request.user.avatar = path
               return response.Response()
-      return response.Response({"detail":"wal się na ryj to nie jpg i D****** tez"}) 
+      return response.Response({"detail":"nieobsługiany typ pliku"}) 
 
     
