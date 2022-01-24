@@ -18,6 +18,7 @@ import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
 import AddAplication from './Pages/AddAplication/AddAplication';
 import UserPage from './Pages/UserPage/UserPage';
 import UserPropertiesPage from './Pages/UserPropertiesPage/UserPropertiesPage';
+import ProjectPropertiesPage from './Pages/ProjectPropertiesPage/ProjectPropertiesPage';
 
 const routing = (
   <div>
@@ -32,8 +33,9 @@ const routing = (
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/projects/create" element={<CreateProject />} />
+            <Route path="/projects/:id/edit" element={< ProjectPropertiesPage/>} />
             <Route path="/user/:id" element={<UserPage />} />
-            <Route path="/user/:id/edit" element={<UserPropertiesPage />} />
+            <Route path="/user/edit" element={<UserPropertiesPage />} />
             <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
             <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>
