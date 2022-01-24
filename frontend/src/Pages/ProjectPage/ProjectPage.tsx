@@ -4,12 +4,13 @@ import "./ProjectPage.css"
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
 import CustomPopup from "../../Component/CustomPopup/CustomPopup";
-
-
+import { saveAs } from 'file-saver'
+import Carousel from 'react-bootstrap/Carousel' 
 
 const ProjectPage = ({isAuthenticated}) => {
 
     const [project, setProject] = useState([]);
+    const [imgPaths, setImgPaths] = useState([]);
     const [advertisments, setAdvertisments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loadingAdv, setLoadingAdv] = useState(true);
@@ -19,6 +20,7 @@ const ProjectPage = ({isAuthenticated}) => {
     const location = window.location.pathname.split("/");
     useEffect(() => {
         getObject();
+        getProjectImages();
         isOwner();
         getAdvertisments();
     }, []);
@@ -88,8 +90,45 @@ const ProjectPage = ({isAuthenticated}) => {
           });
     }
 
+    const onClickGetProjectFIles = (e) =>{
+        getProjectFiles();
+    } 
+    const getProjectFiles = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/download/`.replace(":id", location[2]), {
+            method: 'POST',
+            mode: 'cors',
+            headers:{
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            }
+        })
+          .then(response => response.blob())
+          .then(blob => saveAs(blob, project[0]["Project"]["title"]))
+          .catch(error => {
+            //setError(true);
+          });
+
+    }
+    
+    const getProjectImages = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/getImages/`.replace(":id", location[2]), {
+            method: 'GET',
+            mode: 'cors',
+            headers:{
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            }
+        })
+          .then(response => response.json())
+          .then(responseJson => {
+            setImgPaths(responseJson);
+          })
+          .catch(error => {
+            //setError(true);
+          });
+
+    }
+
     const deleteObject = () => {
-        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/`.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/download/`.replace(":id", location[2]), {
             method: 'DELETE',
             mode: 'cors',
             headers:{
@@ -120,8 +159,19 @@ const ProjectPage = ({isAuthenticated}) => {
                     <div id="Promos-title">
                         <h1><text>{project["Project"]["title"]} {owner && <span>You are owner</span>}</text></h1>
                     </div>
-                    <div id="Promos-image">
-                        <img src="../logo512.png"></img>
+                    <div>
+                        <Carousel>
+                            { imgPaths && imgPaths.map(imgPath => 
+                            <Carousel.Item>
+                                <img
+                                className="d-block w-100"
+                                src={imgPath.replace("./frontend/public/", "../").replace("presentation", "presentation/")}
+                                alt="First slide"
+                                />
+                            </Carousel.Item>
+                            )}
+                            
+                        </Carousel>
                     </div>
 
                     <div id="Promos-text">
@@ -165,6 +215,7 @@ const ProjectPage = ({isAuthenticated}) => {
                                     <Link to={"/projects/:id/advisements/create".replace(":id", location[2])}>
                                         <button className="btn btn-primary" >Add advisement</button>
                                     </Link>
+                                    <button className="btn btn-primary"  onClick={e => onClickGetProjectFIles(e)}>Download</button>
                                 </td>
                             </tr> 
                             }
