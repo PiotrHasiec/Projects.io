@@ -1,0 +1,11 @@
+#Widget{
+    width: 75%;
+    margin: auto;
+    margin-top: 1em;
+    border-radius: 25px;
+    background: #D61A46;
+    padding: 20px;
+    width: 50%;
+    color:white;
+}
+
