@@ -21,6 +21,13 @@ class UserViewSet(viewsets.ModelViewSet):
         return response.Response(UserSerializer(me).data)
 
 
+    def partial_update (self, request, pk=None):
+        if request.user.id == int(pk):
+
+           return super().partial_update(request, pk)
+        return response.Response({"detail":"Błąd autoryzacji"}) 
+       
+
     def retrieve(self, request, pk=None):
         item = Users.objects.get(pk = pk)
         if request.user.id == int(pk):
@@ -74,19 +81,18 @@ class UserViewSet(viewsets.ModelViewSet):
         name, extension = os.path.splitext(request.name)
         return extension
         
-    @action(detail=True,methods=['POST','GET'])
+    @action(detail=True,methods=['POST'])
     def upload_avatar(self,request,pk=None, *args, **kwargs):
-      if request.method == 'POST':
-        #if(request.user.id == pk):
-          filename = request.data.get('filename')
-          uploaded_file= request.FILES['document']
-          name = UserViewSet.extension(self, uploaded_file)
-          if (uploaded_file.size < 65536):
-            if (name == ".jpg" or name == ".bmp"):
+      if(request.user.id == pk):
+        uploaded_file= request.FILES['avatar']
+        name = UserViewSet.extension(self, uploaded_file)
+        if (uploaded_file.size < 65536):
+          if (name == ".jpg" or name == ".bmp" or name == ".png"):
              
-              path = default_storage.save('./frontend/public/FileBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
-              request.user.avatar = path
-              return response.Response()
-      return response.Response({"detail":"nieobsługiany typ pliku"}) 
+            path = default_storage.save('./frontend/public/FileBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))
+            request.user.avatar = path
+            request.user.save()
+            return response.Response()
+        return response.Response({"detail":"nieobsługiany typ pliku"}) 
 
     
