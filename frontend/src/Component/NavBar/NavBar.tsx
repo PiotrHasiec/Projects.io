@@ -39,7 +39,7 @@ const NavBar = ({logout, isAuthenticated, user}) => {
             { (user !== null) ? userBar() : null }
             
  
-            <Link to="/" style={{ textDecoration: 'none' }}>
+            <Link to="/projects/create" style={{ textDecoration: 'none' }}>
                 <button type="button" className='btn' >create project</button>
             </Link>
             <button type="button" className='btn' onClick={logout_user}>Logout</button>

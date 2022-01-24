@@ -1,5 +1,5 @@
 import React, { Component, ReactNode, useEffect, useState } from "react"
-import { Route, Navigate } from 'react-router-dom';
+import { Route, Navigate, Link } from 'react-router-dom';
 import NavBar from "../../Component/NavBar/NavBar";
 import "./UserPage.css"
 import { connect } from "react-redux";
@@ -43,7 +43,7 @@ const UserPage = ({ }) => {
             
             <div id="Profile-card">
                 <h1><text>User Page</text></h1>
-                <img id="User-avatar" src=""></img>
+                <img id="User-avatar" src={profile["User"]["avatar"].replace("./frontend/public/", "../")}></img>
                 <div id="Name-card">
                     <h2><text>{profile["User"]["name"]}</text></h2>
                     <h3><text>EMAIL</text></h3>
@@ -77,7 +77,10 @@ const UserPage = ({ }) => {
             </div>
             { profile["isOwner"] == "True" && 
                 <div id="Owner-exclusive">
-                    <button type="button" className="btn">Edit profile</button>
+                    <Link to="/user/edit" style={{ textDecoration: 'none' }}>
+                        <button type="button" className="btn">Edit profile</button>
+                    </Link>
+
                     <button type="button" className="btn">Become developer</button>
                     <button type="button" className="btn">Delete profile</button>
                 </div>
