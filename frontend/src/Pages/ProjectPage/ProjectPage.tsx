@@ -114,10 +114,10 @@ const ProjectPage = ({isAuthenticated}) => {
         <div>
             {loading && <div>Loading...</div>}
             {!loading && !error && project.map(project =>
-                <div>
+                <div id="Page-area" >
                      <div id="Promos">
-                <div className="square-body">
-                    <div id="Promos-text">
+                
+                    <div id="Promos-title">
                         <h1><text>{project["Project"]["title"]} {owner && <span>You are owner</span>}</text></h1>
                     </div>
                     <div id="Promos-image">
@@ -128,7 +128,7 @@ const ProjectPage = ({isAuthenticated}) => {
                         <h1><text>Description</text></h1>
                         <h3><text>{project["Project"]["description"]}</text></h3>
                     </div>
-                </div>
+                
             </div>
 
             <div id="Details">

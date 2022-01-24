@@ -1,52 +1,83 @@
+#Page-area{
+  padding:2%;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50));
+}
+
 #Promos {
-    border-radius: 25px;
-    background: #D61A46;
-    padding: 20px;
-    width: 50%;
-    margin: 2em;
-    float: left;
-  }
+  border-radius: 15px;
+  background: #D61A46;
+  display: flexbox;
+  float: left; 
+  width: 63%;
+  padding:2%;   
+}
 
-  #Promos-image{
-    background: #919191;
-    width: 90%;
-    margin: auto;
-    display: flex;
-    border-radius: 2em;
-  }
+#Promos-title{
+  width: 86%;
+  color: white;
+  margin-left: 6%;
+  margin-right: 6%;
+  margin-bottom: 3%;
+  border-top: white 1px solid;
+  border-bottom: white 1px solid;
+}
 
-  #Promos-image img{
-    margin-left: auto;
-    margin-right: auto;
-  }
+#Promos-title text{
+  font-size: 64px;
+}
 
-  #Promos-text{
-    width: 90%;
-    margin: auto;
-    text-align: justify;
-  }
+#Promos-image{
+  width: 86%;
+  background: #919191;
+  border-radius: 15px;
+  display: flexbox;
+  margin-left: 6%;
+  margin-right: 6%;
+}
 
-  #Promos-text text{
-    margin: 1em;
-    color: #ffffff;
-  }
+#Promos-image img{
+  width: 100%;
+}
 
-  #Details {
-    border-radius: 25px;
-    background: #D61A46;
-    padding: 20px;
-    width: 43%;
-    margin: 2em;
-    float: left;
-  }
+#Promos-text{
+  width: 86%;
+  margin-left: 6%;
+  margin-right: 6%;
+  margin-bottom: 3%;
+  margin-top: 5%;
+}
 
-  #Details-text{
-    width: 95%;
-    margin: auto;
-    text-align: justify;
-  }
+#Promos-text h1{
+  color: white;
+  border-bottom: white 1px solid;
+}
 
-  #Details-text text{
-    margin: 1em;
-    color: #ffffff;
-  }
+#Promos-text h3{
+  color:lightgray;
+}
+
+#Details {
+  padding: 2%;
+  border-radius: 15px;
+  background: #D61A46;
+  display: flexbox; 
+  float: right;
+  width: 35%;      
+}
+
+#Details-text{
+  width: 86%;
+  margin-left: 6%;
+  margin-right: 6%;
+  margin-bottom: 3%;
+}
+
+#Details-text h1{
+  border-top: white 1px solid;
+  border-bottom: white 1px solid;
+  color: white;
+}
+
+#Details-text h4{
+  color:lightgray;
+}
