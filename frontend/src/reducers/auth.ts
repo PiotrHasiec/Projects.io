@@ -15,7 +15,8 @@ const initialState = {
     access: localStorage.getItem('access'),
     refresh: localStorage.getItem('refresh'),
     isAuthenticated: null,
-    user: null
+    user: null,
+    errors: null,
 };
 
 
@@ -54,9 +55,20 @@ export default function(state = initialState, action) {
         case SIGNUP_SUCCESS:
             return {
                 ...state,
-                isAuthenticated: false
+                isAuthenticated: false,
+                errors: null
             }
         case LOGOUT:
+            localStorage.removeItem('access');
+            localStorage.removeItem('refresh');
+            return {
+                ...state,
+                access: null,
+                refresh: null,
+                isAuthenticated: false,
+                user: null,
+                errors: null
+            }
         case LOGIN_FAIL:
         case SIGNUP_FAIL:
             localStorage.removeItem('access');
@@ -66,7 +78,8 @@ export default function(state = initialState, action) {
                 access: null,
                 refresh: null,
                 isAuthenticated: false,
-                user: null
+                user: null,
+                errors: payload
             }
         default:
             return state

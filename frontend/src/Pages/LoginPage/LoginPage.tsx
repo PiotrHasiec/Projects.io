@@ -5,7 +5,7 @@ import "./LoginPage.css";
 import { connect } from "react-redux";
 import { login } from "../../Actions/auth";
 
-const LoginPage = ({login, isAuthenticated}) => {
+const LoginPage = ({login, isAuthenticated, errors}) => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -17,10 +17,15 @@ const LoginPage = ({login, isAuthenticated}) => {
     const onSubmit = e => {
         e.preventDefault();
         login(email, password);
+        console.log(errors);
     }
 
     if (isAuthenticated) {
         return <Navigate to="/" />
+    }
+
+    const showErrors = () => {
+        console.log(errors);
     }
 
     return (
@@ -35,9 +40,9 @@ const LoginPage = ({login, isAuthenticated}) => {
                         onChange={e => onChange(e)}/>
                         <input type="password" name="password" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2"  value={password}
                         onChange={e => onChange(e)}/>
-                        
+                        {   errors && 
+                        <div id="errormessage">{errors["detail"]}</div> }
                         <button className="btn btn-outline-secondary" type="submit">Sign in</button>
-                       
                         </form>
                     </div>
                 </div>
@@ -48,7 +53,8 @@ const LoginPage = ({login, isAuthenticated}) => {
 
 
 const mapStateToProps = state => ({
-    isAuthenticated: state.auth.isAuthenticated
+    isAuthenticated: state.auth.isAuthenticated,
+    errors: state.auth.errors
 })
 
 export default connect(mapStateToProps, { login })(LoginPage);
