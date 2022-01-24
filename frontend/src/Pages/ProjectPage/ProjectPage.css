@@ -5,7 +5,7 @@
 
 #Promos {
   border-radius: 15px;
-  background: #D61A46;
+  background: white;
   display: flexbox;
   float: left; 
   width: 63%;
@@ -14,12 +14,12 @@
 
 #Promos-title{
   width: 86%;
-  color: white;
+  color: #D61A46;
   margin-left: 6%;
   margin-right: 6%;
   margin-bottom: 3%;
-  border-top: white 1px solid;
-  border-bottom: white 1px solid;
+  border-top: #D61A46 1px solid;
+  border-bottom: #D61A46 1px solid;
 }
 
 #Promos-title text{
@@ -48,20 +48,20 @@
 }
 
 #Promos-text h1{
-  color: white;
-  border-bottom: white 1px solid;
+  color: #D61A46;
+  border-bottom: #D61A46 1px solid;
 }
 
 #Promos-text h3{
-  color:lightgray;
+  color:#b6163c;
 }
 
 #Details {
   padding: 2%;
   border-radius: 15px;
-  background: #D61A46;
+  background: white;
   display: flexbox; 
-  float: right;
+  float: left;
   width: 35%;      
 }
 
@@ -73,11 +73,29 @@
 }
 
 #Details-text h1{
-  border-top: white 1px solid;
-  border-bottom: white 1px solid;
-  color: white;
+  border-top: #D61A46 1px solid;
+  border-bottom: #D61A46 1px solid;
+  color: #D61A46;
 }
 
 #Details-text h4{
-  color:lightgray;
+  color:#b6163c;
+}
+
+@media screen and (max-width: 1300px) {
+  #Promos {
+    width: 80%;
+  }
+  #Details{
+  width: 80%;
+  } 
+}
+
+@media screen and (max-width: 700px) {
+  #Promos {
+    width: 90%;
+  }
+  #Details{
+    width: 80%;
+    } 
 }
