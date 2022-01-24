@@ -18,30 +18,18 @@ const SearchProject = () =>{
   const { projectName } = location.state as locationState;
 
   const [formData, setFormData] = useState({
-    titlecontain: projectName
+    titlecontain: projectName,
+    direction: 'title'
   });
-  const { titlecontain } = formData;
+  const { titlecontain, direction } = formData;
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/?titlecontain=${e.target.value}`, {
-      method: 'GET',
-      mode: 'cors',
-      headers:{
-          'Content-Type': 'application/json',
-      }
-    })
-    .then(response => response.json())
-    .then(responseJson => {
-      setProjects(responseJson);
-      setLoading(false);
-    })
-    .catch(error => {
-      setLoading(false);
-      setError(true);
-    });
   }
 
+  useEffect(() => {
+    getObject();
+  },[formData]) 
 
   useEffect(() => {
     getObject();
@@ -49,7 +37,7 @@ const SearchProject = () =>{
 
   
   const getObject = () => {
-      return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/?titlecontain=${titlecontain}`, {
+      return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/?titlecontain=${titlecontain}&sort=${direction}`, {
           method: 'GET',
           mode: 'cors',
           headers:{
@@ -73,8 +61,8 @@ const SearchProject = () =>{
           <div className="input-group mb-3">
             <input type="text" className="form-control" placeholder="Project name" aria-label="Project name" aria-describedby="basic-addon2" name="titlecontain" value={titlecontain} onChange={e => onChange(e)}/>
             <div className="input-group-append">
-              <button className="btn btn-outline-dark" aria-label="Left Align" type="button"><i className="fa fa-angle-down angle-up"></i></button>
-              <button className="btn btn-outline-dark" aria-label="Left Align" type="button"><i className="fa fa-angle-up"></i></button>
+              <button className="btn btn-outline-dark" aria-label="Left Align" type="button" name="direction" value="title" onClick={e => onChange(e)}><i className="fa fa-angle-down angle-up"></i></button>
+              <button className="btn btn-outline-dark" aria-label="Left Align" type="button" name="direction" value="-title" onClick={e => onChange(e)}><i className="fa fa-angle-up"></i></button>
             </div>
           </div>
           {loading && <div>Loading...</div>}
