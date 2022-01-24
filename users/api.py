@@ -1,11 +1,12 @@
 import os
 from rest_framework.decorators import action, permission_classes
-from .models import  Users, RatingUsers
-from rest_framework import response, viewsets, permissions
+from .models import  Users, RatingUsers,Projects
+from rest_framework import response, viewsets, permissions, status
 from .serializers import *
 from django.db.models import Avg
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from projects.serializers import ProjectUnAuthorizeSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -25,7 +26,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.user.id == int(pk):
 
            return super().partial_update(request, pk)
-        return response.Response({"detail":"Błąd autoryzacji"}) 
+        return response.Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED) 
        
 
     def retrieve(self, request, pk=None):
@@ -81,6 +82,30 @@ class UserViewSet(viewsets.ModelViewSet):
         name, extension = os.path.splitext(request.name)
         return extension
         
+    @action(detail=True,methods=['GET'])
+    def getProjects(self,request,pk=None, *args, **kwargs):
+        queryset = Projects.objects.filter(idOwner__id = pk)
+        sorting = request.GET.get('sort',"")
+        title_contain =  request.GET.get('titlecontain',"")
+        desc_contain = request.GET.get('descecontain',"")
+        up =  request.GET.get('up',"")
+        down =  request.GET.get('down',0)
+        
+        if not title_contain == "":
+          queryset = queryset.filter(title__icontains=str(title_contain))
+        
+        if (not desc_contain ==""):
+            queryset = queryset.filter(decription__icontains=str(desc_contain))
+
+        if (not sorting == ""):
+          queryset = queryset.order_by(sorting)
+
+        if not up == "" and down =="": 
+          queryset = queryset[int(down):int(up)]
+
+        projects = [ {"Project": ProjectUnAuthorizeSerializer(item).data, "Meneger":Users.objects.filter(pk = item.idOwner.pk).first().name} for item in queryset ]
+        return  response.Response(projects)
+
     @action(detail=True,methods=['POST'])
     def upload_avatar(self,request,pk=None, *args, **kwargs):
       if(request.user.id == pk):
@@ -93,6 +118,8 @@ class UserViewSet(viewsets.ModelViewSet):
             request.user.avatar = path
             request.user.save()
             return response.Response()
-        return response.Response({"detail":"nieobsługiany typ pliku"}) 
+          return response.Response({"detail":"Nieobsługiany typ pliku"} ,status=status.HTTP_400_BAD_REQUEST) 
+        return response.Response({"detail":"Plik jest za duży"} ,status=status.HTTP_400_BAD_REQUEST) 
+      return response.Response({"detail":"Błąd autoryzacji"} ,status=status.HTTP_401_UNAUTHORIZED) 
 
     
