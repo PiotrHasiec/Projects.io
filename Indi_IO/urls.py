@@ -13,5 +13,6 @@ urlpatterns = [
     path('Projects/',include('projects.urls')),
     path('Users/',include("users.urls")),
     path('Applications/',include("applications.urls")),
-    path('Advertisements/',include("advertisements.urls"))
+    path('Advertisements/',include("advertisements.urls")),
+    path('Collaborators/',include("collaborators.urls"))
 ]

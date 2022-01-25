@@ -1,0 +1,50 @@
+#CreateCard{
+    border-radius: 0.25rem;
+    background: #fff;
+    padding: 20px;
+    width: 25%;
+    margin: auto;
+    margin-top: 2em;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,.125);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+#CreateCard input{
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 2%;
+    border-radius: 5px;
+}
+
+#CreateCard textarea{ 
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    border-radius: 5px;
+    border-color: lightgray;
+    padding-left: 3%;
+    padding-right: 3%;
+}
+
+#CreateCard button{
+    width: 40%;
+    margin-left: 30%;
+    margin-top:5%;
+    background-color: #D61A46;
+    color: #FBDFE6;
+    border-radius: 5px;
+}
+
+@media screen and (max-width: 1300px) {
+    #CreateCard {
+      width: 50%;
+    }
+  }
+
+  @media screen and (max-width: 700px) {
+    #CreateCard {
+      width: 70%;
+    }
+  }

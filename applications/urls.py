@@ -6,5 +6,5 @@ from applications import AdvertismentApi
 
 router = routers.DefaultRouter()
 
-router.register("api/Application",ApplicationsViewSet)
+router.register("api/Applications",ApplicationsViewSet)
 urlpatterns = router.urls

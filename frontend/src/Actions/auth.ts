@@ -38,6 +38,7 @@ export const load_user = () => async dispatch => {
     } else {
         dispatch({
             type: USER_LOADED_FAIL
+            
         });
     }
 }
@@ -99,7 +100,8 @@ export const login = (email: string, password: string) => async dispatch => {
         dispatch(load_user());
     } catch (err) {
         dispatch({
-            type: LOGIN_FAIL
+            type: LOGIN_FAIL,
+            payload: err.response.data
         })
     }
 };
@@ -121,7 +123,8 @@ export const signup = (name: string, email: string, password: string, re_passwor
         });
     } catch (err) {
         dispatch({
-            type: SIGNUP_FAIL
+            type: SIGNUP_FAIL,
+            payload: err.response.data
         })
     }
 };

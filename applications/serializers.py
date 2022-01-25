@@ -7,20 +7,11 @@ class AdvertismentAuthorizeSerializer(serializers.ModelSerializer):
         model = Advertisements
         fields = "__all__"
         
-class CollaboratorsProjectUnAuthorizeSerializer(serializers.ModelSerializer):
+class AdvertismentProjectUnAuthorizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisements
         fields = ("idProject","idUser", "idPosition")   
-#CollaboratorsProject 
-class CollaboratorsProjectAuthorizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CollaboratorsProject
-        fields = "__all__"
-        
-class CollaboratorsProjectUnAuthorizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CollaboratorsProject
-        fields = ("idProject","idUser", "idPosition")        
+      
      
 
 # Applications
@@ -30,7 +21,8 @@ class ApplicationsAuthorizeSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
 class ApplicationsUnAuthorizeSerializer(serializers.ModelSerializer):
+    userName = serializers.CharField(source='idUser.name')
     class Meta:
         model = Applications
-        fields = ("idAdvertisement","description", "acceptionState")
+        fields = ("id","idAdvertisement","description", "acceptionState", "idUser","userName")
 

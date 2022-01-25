@@ -14,10 +14,11 @@ import { Provider } from 'react-redux';
 import store from './store';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CreateProject from './Pages/CreateProject/CreateProject';
-import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
 import AddAplication from './Pages/AddAplication/AddAplication';
 import UserPage from './Pages/UserPage/UserPage';
 import UserPropertiesPage from './Pages/UserPropertiesPage/UserPropertiesPage';
+import ProjectPropertiesPage from './Pages/ProjectPropertiesPage/ProjectPropertiesPage';
+import UploadProjectFiles from './Pages/UploadProjectFiles/UploadProjectFiles';
 
 const routing = (
   <div>
@@ -25,16 +26,17 @@ const routing = (
       <Router>
         <Layout>
           <Routes>
-
+      
             <Route path="/" element={<MainPage />} />
             <Route path="/Projects" element={<SearchProject />} />
             <Route path="/Projects/:id" element={<ProjectPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/projects/create" element={<CreateProject />} />
+            <Route path="/projects/:id/edit" element={< ProjectPropertiesPage />} />
+            <Route path="/projects/:id/upload" element={< UploadProjectFiles />} />
             <Route path="/user/:id" element={<UserPage />} />
-            <Route path="/user/:id/edit" element={<UserPropertiesPage />} />
-            <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
+            <Route path="/user/edit" element={<UserPropertiesPage />} />
             <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>
         </Layout>

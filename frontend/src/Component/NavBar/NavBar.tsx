@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logout } from '../../Actions/auth';
+import { Dropdown } from 'react-bootstrap';
 import './NavBar.css'
 
 const NavBar = ({logout, isAuthenticated, user}) => {
@@ -16,25 +17,36 @@ const NavBar = ({logout, isAuthenticated, user}) => {
     const guestLinks = () => (
         <div>
             <Link to="/login" style={{ textDecoration: 'none' }}>
-                        <button type="button" className='btn'>Sign in</button>
+                        <button type="button" className='btn mybotton'>Sign in</button>
             </Link>
             <Link to="/register" style={{ textDecoration: 'none' }}>
-                <button type="button" className='btn' id="singup">Sign up</button>
+                <button type="button" className='btn mybotton' id="singup">Sign up</button>
             </Link>
         </div>
     );
 
     const userBar = () => (
-        <span id="message">Welcome {user.name}</span>
+        <Fragment>
+            <span id="message">Welcome {user.name}</span>
+            
+        </Fragment>
+        
     )
 
-    const authLinks = () => (
-        <div>
-            { (user !== null) ? userBar() : null }
-             <Link to="/projects/create" style={{ textDecoration: 'none' }}>
-                <button type="button" className='btn' >create project</button>
-            </Link>
-            <button type="button" className='btn' onClick={logout_user}>Logout</button>
+    const authLinks = () => ( 
+        <div id="dropDownDiv">
+            <Dropdown>
+                <Dropdown.Toggle variant="danger" id="dropdown-basic">
+                    { (user !== null) ? userBar() : null }
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                    <Dropdown.Item>{(user !== null) ? <Link to={"/user/:id".replace(":id", user.id) } style={{ textDecoration: 'none', color: "#D51A46"  }}>My profile</Link>: "" }</Dropdown.Item>
+                    <Dropdown.Item><Link to="/projects/create" style={{ textDecoration: 'none', color: "#D51A46" }}>Create project</Link></Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item onClick={logout_user}>Logout</Dropdown.Item>
+                </Dropdown.Menu>
+            </Dropdown>
         </div>
     );
 

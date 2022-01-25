@@ -1,68 +1,88 @@
-import { Component, ReactNode, useState } from "react"
+import { Component, ReactNode, useEffect, useState } from "react"
 import { Link } from "react-router-dom";
 import { Card } from "reactstrap";
+import { useLocation } from 'react-router-dom'
+import "./SearchProject.css";
 
-export interface Project{
-    id: number,
-    title: string,
-    stage: string,
-    description: string,
-    folder: string,
-    averageRate: string,
-    idOwner: number
+interface locationState {
+  projectName: string
 }
 
-class SearchProject extends Component{
+const SearchProject = () =>{
     
-    state = {
-        projects: [] ,
-        loading: true,
-        error: false
-      }
-    
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  
+  const location = useLocation();
+  const { projectName } = location.state as locationState;
 
-    componentWillMount(){
-        this.getObject();
-    }
-    
-    getObject(){
-        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/`, {
-            method: 'GET',
-            mode: 'cors',
-            headers:{
-                'Content-Type': 'application/json'
-            }
-        })
-          .then(response => response.json())
-          .then(responseJson => this.setState ({
-              projects: responseJson,
-              loading: false
-          }))
-          .catch(error => this.setState ({
-            error: true,
-            loading: false
-        }));
-    }
+  const [formData, setFormData] = useState({
+    titlecontain: projectName,
+    direction: 'title'
+  });
+  const { titlecontain, direction } = formData;
 
-    render(): ReactNode {
-        const { projects, loading, error } = this.state;
-        return(
-            <div>
-                
-                {loading && <div>Loading...</div>}
-                {!loading && !error && projects.map(project => 
-                <div className="card-body">
-                    <h2 className="card-title">{project["Project"]["title"]}</h2>
-                    <p className="card-text">Author: {project["Meneger"]}</p>
-                    <Link to={"/Projects/"+project["Project"]["pk"]} style={{ textDecoration: 'none' }}>
-                        <button className="btn btn-outline-secondary" type="button">Show</button>
-                    </Link>
-                </div>)
-                }
-                {error && <div>Error message</div>}
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  useEffect(() => {
+    getObject();
+  },[formData]) 
+
+  useEffect(() => {
+    getObject();
+  }, []);
+
+  
+  const getObject = () => {
+      return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/?titlecontain=${titlecontain}&sort=${direction}`, {
+          method: 'GET',
+          mode: 'cors',
+          headers:{
+              'Content-Type': 'application/json',
+          }
+      })
+      .then(response => response.json())
+      .then(responseJson => {
+        setProjects(responseJson);
+        setLoading(false);
+      })
+      .catch(error => {
+        setLoading(false);
+        setError(true);
+      });
+  }
+
+  
+  return(
+      <div id="SearchCard">
+          <div className="input-group mb-3">
+            <input type="text" className="form-control" placeholder="Project name" aria-label="Project name" aria-describedby="basic-addon2" name="titlecontain" value={titlecontain} onChange={e => onChange(e)}/>
+            <div className="input-group-append">
+              <button className="btn btn-outline-dark" aria-label="Left Align" type="button" name="direction" value="title" onClick={e => onChange(e)}><i className="fa fa-angle-down angle-up"></i></button>
+              <button className="btn btn-outline-dark" aria-label="Left Align" type="button" name="direction" value="-title" onClick={e => onChange(e)}><i className="fa fa-angle-up"></i></button>
             </div>
-        )
-    }
+          </div>
+          {loading && <div>Loading...</div>}
+          {!loading && !error && projects.map(project => 
+          <div className="card-body">
+              <div id="project-name">
+                <h2 className="card-title">{project["title"]}</h2>
+                <p className="card-text">Author: {project["Manager"]}</p>
+              </div>
+              <div className="project-button">
+                <Link to={"/Projects/"+project["pk"]} style={{ textDecoration: 'none' }}>
+                    <button className="btn btn-outline-danger" type="button">Show</button>
+                </Link>
+            </div>
+          </div>
+          )
+          }
+          {error && <div>Error message</div>}
+      </div>
+  )
 }
 
 
