@@ -1,34 +1,47 @@
-#Page-area {
-  padding: 2%;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.50));
+#MainProjectDiv {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
-
+#MainProjectDiv .detailsBox{
+  margin: 2%;
+  border-radius: 0.25rem;
+  box-sizing: border-box;
+}
 #Promos {
-  border-radius: 15px;
+  filter: drop-shadow(0px 4px 4px #340913);
   background: white;
-  display: flexbox;
-  float: left;
-  width: 63%;
+  width: 60%;
   padding: 2%;
   margin-right: 2%;
   margin-bottom: 2%;
 }
 
-#Promos-title1 {
+
+#Details {
+  filter: drop-shadow(0px 4px 4px #340913);
+  background: white;
+  padding: 2%;
+  width: 30%;
+  height: 100%;
+  margin-bottom: 2%;
+}
+
+#Promos-title {
   width: 86%;
   color: black;
   margin-left: 6%;
   margin-right: 6%;
   margin-bottom: 3%;
-  border-top: #D61A46 1px solid;
-  border-bottom: #D61A46 1px solid;
+  border-bottom: #340913 1px solid;
   word-wrap: break-word;
-}
-
-#Promos-title1 text {
   font-size: larger;
   margin-bottom: 3%;
 }
+#Promos-title span{
+  color: #D61A46;
+}
+
 
 #Owner {
   font-size: xx-large;
@@ -52,6 +65,11 @@
   width: 100%;
 }
 
+#Promos-text h1 {
+  color: black;
+  border-bottom: #D61A46 1px solid;
+}
+
 #Promos-text {
   width: 86%;
   margin-left: 6%;
@@ -62,7 +80,7 @@
 
 #Promos-text h1 {
   color: black;
-  border-bottom: #D61A46 1px solid;
+  border-bottom: #340913 1px solid;
 }
 
 #Promos-text h3 {
@@ -70,15 +88,6 @@
   word-wrap: break-word;
 }
 
-#Details {
-  padding: 2%;
-  border-radius: 15px;
-  background: white;
-  display: flexbox;
-  float: left;
-  width: 35%;
-  margin-bottom: 2%;
-}
 
 #Details-text {
   width: 86%;
@@ -88,8 +97,7 @@
 }
 
 #Details-text h1 {
-  border-top: #D61A46 1px solid;
-  border-bottom: #D61A46 1px solid;
+  border-bottom: #340913 1px solid;
   color: black;
 }
 
@@ -123,7 +131,7 @@
   background: white;
   display: flexbox;
   float: left;
-  width: 63%;
+  width: 100%;
   padding: 2%;
   margin-right: 1%;
   margin-bottom: 2%;

@@ -24,12 +24,13 @@ const ProjectPage = ({ isAuthenticated }) => {
   const location = window.location.pathname.split("/");
   useEffect(() => {
       getObject();
-      getProjectImages();
+      
       getCollaborators();
   }, []);
 
   useEffect(() => {
     if(isAuthenticated === true){
+        getProjectImages();
       isOwner();
       getAdvertisments();
     }
@@ -152,30 +153,6 @@ const ProjectPage = ({ isAuthenticated }) => {
     .catch(error => {
     });
   }
-
-    const onClick = e => {
-        deleteObject();
-    };
-
-    const getObject = () => {
-        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/?format=json`.replace(":id", location[2]), {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(response => response.json())
-            .then(responseJson => {
-                setProject([responseJson]);
-                setLoading(false);
-            })
-            .catch(error => {
-                setLoading(false);
-                setError(true);
-            });
-    }
-
 
     const getAdvertisments = () => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/getAdvertisments/`.replace(":id", location[2]), {
@@ -353,207 +330,139 @@ const ProjectPage = ({ isAuthenticated }) => {
     }
 
 
-    return (
-        <div>
-            {loading && <div>Loading...</div>}
-            {!loading && !error && project.map(project =>
-                <div id="Page-area" >
-                    <div id="Promos">
+  return (
+    <div>
+      {loading && <div>Loading...</div>}
+      {!loading && !error && project.map(project =>
+          <div id="MainProjectDiv">
+              <div id="Promos" className="detailsBox">
+                  <div id="Promos-title">
+                      <h1>Title: <span>{project["Project"]["title"]}</span></h1>
+                  </div>
+                  <div id="Carousel">
+                      <Carousel>
+                          {imgPaths && imgPaths.map(imgPath =>
+                              <Carousel.Item>
+                                  <img
+                                      className="d-block w-100"
+                                      src={imgPath.replace("./frontend/public/", "../").replace("presentation", "presentation/")}
+                                      alt="First slide"
+                                  />
+                              </Carousel.Item>
+                          )}
 
-                        <div id="Promos-title">
-                            <h1><text>{project["Project"]["title"]} {owner && <div id="Owner">You are the owner</div>}</text></h1>
-                        </div>
-                        <div id="Carousel">
-                            <Carousel>
-                                {imgPaths && imgPaths.map(imgPath =>
-                                    <Carousel.Item>
-                                        <img
-                                            className="d-block w-100"
-                                            src={imgPath.replace("./frontend/public/", "../").replace("presentation", "presentation/")}
-                                            alt="First slide"
-                                        />
-                                    </Carousel.Item>
-                                )}
+                      </Carousel>
+                  </div>
 
-                            </Carousel>
-                        </div>
+                  <div id="Promos-text">
+                      <h1>Description</h1>
+                      <h3>{project["Project"]["description"]}</h3>
+                  </div>
+              </div>
+ 
 
-                        <div id="Promos-text">
-                            <h1><text>Description</text></h1>
-                            <h3><text>{project["Project"]["description"]}</text></h3>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-            <div id="Details">
-                <div id="Details-text">
-                    <h1><text>Details</text></h1>
-                    <h4>
-                        <table>
-                            <tr>
-                                <td><text>Title: </text></td>
-                                <td><text>{project["Project"]["title"]}</text></td>
-                            </tr>
-                            <tr>
-                                <td> <text>Development state:</text></td>
-                                <td> <text>{project["Project"]["stage"]}</text></td>
-                            </tr>
-                            <tr>
-                                <td><text>Owner:</text></td>
-                                <td><text>{project["Project"]["Manager"]}</text></td>
-                            </tr>
-                            <tr>
-                                <td><text>Rate:</text></td>
-                                <td><text>{project["Project"]["averageRate"]}</text></td>
-                            </tr>
-                            { owner && isAuthenticated && 
-                            <tr>
-                                <td>
-                                    <button className="btn btn-secondary" onClick={e => onClick(e)}>DELETE PROJECT </button>
-                                </td>
-                            </tr> 
-                            }
-                             { isAuthenticated && owner &&
-                            <tr>
-                                <td>
-                                    <button className="btn btn-primary" onClick={(e) => setVisibilityAdvertisment(!visibilityAdvertisment)}>Add advisement</button>
-                                    <CustomPopup
-                                      onClose={popupDeleteCloseHandlerAdvertisment}
-                                      show={visibilityAdvertisment}
-                                      title="Add advertisment"
-                                      >
-                                        <div className="input-group mb-3">
-                                          <form onSubmit={e => onSubmitAdvisement(e)}>
-                                          <input type="text" className="form-control" name="position" value={position} onChange={e => onChange(e)} placeholder="Position" aria-label="Project name" aria-describedby="basic-addon2"/>
-                                          <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
-                                          
-                                          <button className="btn btn-outline-secondary" type="submit">Add</button>
-                                      
-                                          </form>
-                                        </div>
-                                    </CustomPopup>
-                                    <button className="btn btn-primary"  onClick={e => onClickGetProjectFIles(e)}>Download</button>
-                                    <br></br>
-                                </td>
-                            </tr> 
-                            }
-                            <tr>
-                                <td>
-                                    <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1}}/* Available Props */ />
-                                    <button className="btn btn-primary"  onClick={e => onClickRateProject(e)}>Rate</button>
-                                </td>
-                            </tr> 
-                        </table>
-                    </h4>
-                </div>
-            </div >
-            <div>
-                { !loadingAdv &&  advertisments.map(advertisment => 
-                    <div>
-                        <h1>{advertisment["namePosition"]}</h1>
-                        <p>{advertisment["description"]}</p>
-                        { !owner && advertisment["Aplications"].length === 0 && 
-                                        <button className="btn btn-primary" onClick={(e) => setIdApicationAndShowPopup(advertisment["idAdvertisment"])}>Add application</button>
-                                    } 
-                        { !owner && advertisment["Aplications"].length !== 0 && <h2>Your aplications:</h2>}
-                        {  advertisment["Aplications"].map(aplication => 
-                          <div>
-                            <h3>{aplication["description"]}</h3>
-                            { owner && 
-                            <Link to={"/user/:id".replace(":id", aplication["idUser"])}>
-                              {aplication["userName"]}
-                            </Link> }
-                            { owner && <button className="btn btn-outline-secondary" type="button" name="aplication" value={aplication["id"]} onClick={e => onClickAcceptApplication(e)}>Accept</button> }
-                            { !owner && <div>
-                                        <button className="btn btn-primary" onClick={(e) => setIdApicationAndShowPopup(advertisment["idAdvertisment"])}>Edit</button>
-                                    <button className="btn btn-danger" name="aplication" value={advertisment["idAdvertisment"]} onClick={e => onClickDeleteApplication(e)}>Delete</button>
-                                    </div>
-                                    } 
-                          </div>)}
-                          <CustomPopup
-                              onClose={popupDeleteCloseHandlerAplication}
-                              show={visibilityAplication}
-                              title="Aplication"
-                              >
-                            <div className="input-group mb-3">
-                              <form onSubmit={e => onSubmitAplication(e)}>
-                              <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
-                              
-                              <button className="btn btn-outline-secondary" type="submit">Add</button>
-                            
-                              </form>
-                            </div>
-                          </CustomPopup>                       
+        <div id="Details" className="detailsBox">
+          <div id="Details-text">
+              <h1>Details</h1>
+              <h4>
+                  <div id="row">
+                    <div id="c1">Title: </div>
+                    <div id="c2">{project["Project"]["title"]}</div>
+                  </div>
+                  <div id="row">
+                    <div id="c1"> Development state:</div>
+                    <div id="c2"> {project["Project"]["stage"]}</div>
+                  </div>
+                  <div id="row">
+                    <div id="c1">Owner:</div>
+                    <div id="c2">{project["Project"]["Manager"]}</div>
+                  </div>
+                  <div id="row">
+                    <div id="c1">Rate:</div>
+                    <div id="c2">{project["Project"]["averageRate"]}</div>
+                  </div>
+                  { isAuthenticated && owner &&
+                  <div>
+                          <button className="btn btn-primary" onClick={(e) => setVisibilityAdvertisment(!visibilityAdvertisment)}>Add advisement</button>
+                          <button className="btn btn-primary"  onClick={e => onClickGetProjectFIles(e)}>Download</button>
+                      </div>
+                  }
+                  <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1}}/* Available Props */ />
+                  <button className="btn btn-primary"  onClick={e => onClickRateProject(e)}>Rate</button>
 
 
-                    <div id="Details">
-                        <div id="Details-text">
-                            <h1><text>Details</text></h1>
-                            <h4>
-                                <div id="row">
-                                    <div id="row">
-                                        <div id="c1"><text>Title: </text></div>
-                                        <div id="c2"><text>{project["Project"]["title"]}</text></div>
-                                    </div>
-                                    <div id="row">
-                                        <div id="c1"> <text>Development state:</text></div>
-                                        <div id="c2"> <text>{project["Project"]["stage"]}</text></div>
-                                    </div>
-                                    <div id="row">
-                                        <div id="c1"><text>Owner:</text></div>
-                                        <div id="c2"><text>{project["Meneger"]}</text></div>
-                                    </div>
-                                    <div id="row">
-                                        <div id="c1"><text>Rate:</text></div>
-                                        <div id="c2"><text>{project["Project"]["averageRate"]}</text></div>
-                                    </div>
-                                    {owner && isAuthenticated &&
-                                        <div id="row">
-                                            <div id="c1">
-                                                <button className="btn btn-secondary" onClick={e => onClick(e)}>DELETE PROJECT </button>
-                                            </div>
-                                        </div>
-                                    }
-                                    {isAuthenticated && owner &&
-                                        <div id="row">
-                                            <div id="c1">
-                                                <Link to={"/projects/:id/advisements/create".replace(":id", location[2])}>
-                                                    <button className="btn btn-primary" >Add advisement</button>
-                                                </Link>
-                                            </div>
-                                            <div id="c2">
-                                                <button className="btn btn-primary" onClick={e => onClickGetProjectFIles(e)}>Download</button>
-                                            </div>
-                                        </div>
-                                    }
-                                </div>
-                            </h4>
-                        </div>
-                    </div >
-                    <div>
-                        {!loadingAdv && advertisments.map(advertisment =>
-                            <div id="Apl">
-                                <h1>{advertisment["namePosition"]}</h1>
-                                <p>{advertisment["description"]}</p>
-                                {!owner && <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
-                                    <button className="btn btn-primary" >Add application</button>
-                                </Link>}
-                            </div>
-                        )
-                        }
-
-                    </div>
-                </div>
-            )}
-            {error && <div>Error message</div>}
-
+              </h4>
+          </div>
         </div >
-    );
-}
+        <div className="detailsBox">
+          {!loadingAdv && advertisments.map(advertisment =>
+            <div id="Apl">
+              <h1>{advertisment["namePosition"]}</h1>
+              <p>{advertisment["description"]}</p>
+              <div>
+              { !owner && advertisment["Aplications"].length === 0 && 
+                  <button className="btn btn-primary" onClick={(e) => setIdApicationAndShowPopup(advertisment["idAdvertisment"])}>Add application</button>
+              } 
+              { !owner && advertisment["Aplications"].length !== 0 && 
+                <div>
+                  <h2>Your aplications:</h2>
+                  <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
+                    <button className="btn btn-primary" >Add application</button>
+                  </Link>
+                </div>}
+              {  advertisment["Aplications"].map(aplication => 
+                <div>
+                  <h3>{aplication["description"]}</h3>
+                  { owner && 
+                  <Link to={"/user/:id".replace(":id", aplication["idUser"])}>
+                    {aplication["userName"]}
+                  </Link> }
+                  { owner && <button className="btn btn-outline-secondary" type="button" name="aplication" value={aplication["id"]} onClick={e => onClickAcceptApplication(e)}>Accept</button> }
+                  { !owner && <div>
+                              <button className="btn btn-primary" onClick={(e) => setIdApicationAndShowPopup(advertisment["idAdvertisment"])}>Edit</button>
+                          <button className="btn btn-danger" name="aplication" value={advertisment["idAdvertisment"]} onClick={e => onClickDeleteApplication(e)}>Delete</button>
+                          </div>
+                          } 
+                </div>)}
+                
+              </div>     
+            </div>
+          )
+          }
+        </div>
+        <CustomPopup
+            onClose={popupDeleteCloseHandlerAplication}
+            show={visibilityAplication}
+            title="Aplication"
+            >
+          <div className="input-group mb-3">
+            <form onSubmit={e => onSubmitAplication(e)}>
+              <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
+              <button className="btn btn-outline-secondary" type="submit">Add</button>          
+            </form>
+          </div>
+        </CustomPopup>  
+        <CustomPopup
+          onClose={popupDeleteCloseHandlerAdvertisment}
+          show={visibilityAdvertisment}
+          title="Add advertisment"
+          >
+            <div className="input-group mb-3">
+            <form onSubmit={e => onSubmitAdvisement(e)}>
+            <input type="text" className="form-control" name="position" value={position} onChange={e => onChange(e)} placeholder="Position" aria-label="Project name" aria-describedby="basic-addon2"/>
+            <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
+            
+            <button className="btn btn-outline-secondary" type="submit">Add</button>
+        
+            </form>
+            </div>
+          </CustomPopup>
+      </div>
 
+          )}
+    </div> 
+  );
+}
 const mapStateToProps = state => ({
     isAuthenticated: state.auth.isAuthenticated,
     user: state.auth.user

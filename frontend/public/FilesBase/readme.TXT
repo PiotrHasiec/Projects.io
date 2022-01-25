@@ -1,1 +1,0 @@
-This folder is required for database to work properly - FilePathField model.
