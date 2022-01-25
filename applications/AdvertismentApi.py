@@ -1,19 +1,11 @@
-import os
-from .ApplicationApi import ApplicationsViewSet
 
-from sys import path
-from django.db import models
-from django.http.response import JsonResponse
-#from rest_framework.decorators import permission_classes
+from .ApplicationApi import ApplicationsViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import *
-from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
-from django.db.models import Avg
 from .serializers import *
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
+
 
 class AdvertisementsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -25,20 +17,38 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
 
-    @action(detail=True,methods=['POST'])
+    @action(detail=True,methods=['POST','DELETE'])
     def createApplication(self, request,pk = None, *args, **kwargs):
         #if pk == request.user.id:
+        if request.method == 'POST':
             return ApplicationsViewSet.create_in_advertisment(request,str(pk))
+        elif request.method == 'DELETE':
+            aplicationToDelete = Applications.objects.filter(idAdvertisement_id = pk, idUser = request.user)
+            aplicationToDelete.delete()
+            return Response()
         #return Response({"detail":"Błąd autoryzacji"})
 
     def list_in_project(request,pk = None):
         advertisements = Advertisements.objects.filter(idProject_id = pk)
-        toResponse = [ {"nameProject": item.idProject.title, 
-                        "namePosition":item.idPosition.name,
-                        "description":item.description,
-                        "idAdvertisment":item.id,
-                        "idProject":item.idProject.id,
-                        }for item in advertisements]
+        project = Projects.objects.filter(pk = pk).first()
+        if(request.user == project.idOwner):
+            toResponse = [ {"nameProject": item.idProject.title, 
+                            "namePosition":item.idPosition.name,
+                            "description":item.description,
+                            "idAdvertisment":item.id,
+                            "idProject":item.idProject.id,
+                            
+                            "Aplications":ApplicationsUnAuthorizeSerializer(Applications.objects.filter(idAdvertisement = item,idAdvertisement__idProject__idOwner_id = request.user.id),many=True).data
+                            }for item in advertisements]
+        else:
+            toResponse = [ {"nameProject": item.idProject.title, 
+                            "namePosition":item.idPosition.name,
+                            "description":item.description,
+                            "idAdvertisment":item.id,
+                            "idProject":item.idProject.id,
+                            
+                            "Aplications":ApplicationsUnAuthorizeSerializer(Applications.objects.filter(idAdvertisement = item,idUser = request.user.id),many=True).data
+                            }for item in advertisements]
 
         return Response(toResponse)
 

@@ -87,7 +87,6 @@ class Advertisements(models.Model):
     idProject = ForeignKey('Projects', on_delete=CASCADE, null=False)
     idPosition = ForeignKey('Positions', on_delete=SET_NULL, null=True)
     description = TextField(max_length=255)
-
     class Meta:
         verbose_name = "Ogłoszenie"
         verbose_name_plural = "Ogłoszenia"
