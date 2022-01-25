@@ -56,7 +56,7 @@ const ProjectPropertiesPage = () => {
                     <option value="PG">Play Ground</option>
                 </select>
                 <br />
-                <button className="btn btn-outline-primary" type="submit">zmień</button>
+                <button className="btn btn-outline-primary" type="submit">Change</button>
             </form>
         </div >
     );

@@ -56,7 +56,7 @@ const CreateProject = ({isAuthenticated, user}) => {
     return (
         <div>
             <div>
-                <div id="LoginCard">
+                <div id="CreateCard">
                     <h1>Create Project</h1>
                     <h3></h3>
                     <div className="input-group mb-3">
