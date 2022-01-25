@@ -4,8 +4,9 @@ import NavBar from "../../Component/NavBar/NavBar";
 import "./UserPage.css"
 import { connect } from "react-redux";
 import CustomPopup from "../../Component/CustomPopup/CustomPopup";
+import { Rating } from 'react-simple-star-rating';
 
-const UserPage = ({ }) => {
+const UserPage = ({isAuthenticated }) => {
 
     const [profile, setProfile] = useState([]);
     const [projects, setProjects] = useState([]);
@@ -14,7 +15,7 @@ const UserPage = ({ }) => {
     const [error1, setError1] = useState(false);
     const [error2, setError2] = useState(false);
     const [visibility, setVisibility] = useState(false);
-
+    const [rate, setRate] = useState(0);
     const [formData, setFormData] = useState({
         password: ''
     });
@@ -31,13 +32,22 @@ const UserPage = ({ }) => {
 
     useEffect(() => {
         getProfile();
-        getProjects();
     }, []);
+
+    useEffect(() => {
+        if(isAuthenticated === true){
+            getProjects();
+            isCollaborator();
+        }
+    
+      }, [isAuthenticated]);
 
     const popupDeleteCloseHandler = (e) => {
         setVisibility(e);
     };
-
+    const handleRating = (rate: number) => {
+        setRate(rate)
+      }
 
     const deleteProfileFun = (current_password) => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/auth/users/me/`, {
@@ -65,7 +75,6 @@ const UserPage = ({ }) => {
             mode: 'cors',
             headers:{
                 'Content-Type': 'application/json',
-                'Authorization': `JWT ${localStorage.getItem('access')}`
             }
         })
           .then(response => response.json())
@@ -87,6 +96,7 @@ const UserPage = ({ }) => {
             headers:{
                 'Content-Type': 'application/json',
                 'Authorization': `JWT ${localStorage.getItem('access')}`
+
             }
         })
           .then(response => response.json())
@@ -99,6 +109,51 @@ const UserPage = ({ }) => {
             setError2(true);
           });
     }
+
+    const isCollaborator = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/amCollaborator/`.replace(":id", location[2]), {
+            method: 'GET',
+            mode: 'cors',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            }
+        })
+          .then(response => response.json())
+          .then(responseJson => {
+
+          })
+          .catch(error => {
+
+          });
+    }
+
+
+    const onClickRateProfile = (e) =>{
+        rateProfile();
+        
+    } 
+    const rateProfile = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/mark/`.replace(":id", location[2]), {
+            method: 'POST',
+            mode: 'cors',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            },
+            body: JSON.stringify({rate: rate.toString()})
+        })
+            .then(response => response.json())
+            .then(responseJson => {
+                getProfile();
+            //setLoading(false);
+            })
+            .catch(error => {
+            //setError(true);
+            });
+
+    }
+
 
     return (
         <div>
@@ -139,6 +194,8 @@ const UserPage = ({ }) => {
                     </table>
                 </h4>
             </div>
+            <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1}}/* Available Props */ />
+            <button className="btn btn-primary"  onClick={e => onClickRateProfile(e)}>Rate</button>
             { profile["isOwner"] == "True" && 
                 <div id="Owner-exclusive">
                     <Link to="/user/edit" style={{ textDecoration: 'none' }}>

@@ -68,12 +68,17 @@ const SearchProject = () =>{
           {loading && <div>Loading...</div>}
           {!loading && !error && projects.map(project => 
           <div className="card-body">
-              <h2 className="card-title">{project["Project"]["title"]}</h2>
-              <p className="card-text">Author: {project["Meneger"]}</p>
-              <Link to={"/Projects/"+project["Project"]["pk"]} style={{ textDecoration: 'none' }}>
-                  <button className="btn btn-outline-secondary" type="button">Show</button>
-              </Link>
-          </div>)
+              <div id="project-name">
+                <h2 className="card-title">{project["title"]}</h2>
+                <p className="card-text">Author: {project["Manager"]}</p>
+              </div>
+              <div className="project-button">
+                <Link to={"/Projects/"+project["pk"]} style={{ textDecoration: 'none' }}>
+                    <button className="btn btn-outline-danger" type="button">Show</button>
+                </Link>
+            </div>
+          </div>
+          )
           }
           {error && <div>Error message</div>}
       </div>

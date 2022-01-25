@@ -14,7 +14,6 @@ import { Provider } from 'react-redux';
 import store from './store';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import CreateProject from './Pages/CreateProject/CreateProject';
-import AddAdvisement from './Pages/AddAdvisement/AddAdvisement';
 import AddAplication from './Pages/AddAplication/AddAplication';
 import UserPage from './Pages/UserPage/UserPage';
 import UserPropertiesPage from './Pages/UserPropertiesPage/UserPropertiesPage';
@@ -38,7 +37,6 @@ const routing = (
             <Route path="/projects/:id/upload" element={< UploadProjectFiles />} />
             <Route path="/user/:id" element={<UserPage />} />
             <Route path="/user/edit" element={<UserPropertiesPage />} />
-            <Route path="/projects/:id/advisements/create" element={<AddAdvisement />} />
             <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>
         </Layout>
