@@ -64,8 +64,9 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     def amOwner(self, request, pk=None):
       if Projects.objects.filter(pk = pk).first().idOwner.id == request.user.id:
         return Response("True")
-      else:
-        return Response("False")
+      elif len(CollaboratorsProject.objects.filter(idProject__id = pk,idUser = request.user ))>0:
+        return Response("Collaborator")
+      return Response("False")
         
     def isUserOwner(self, request, pk=None):
       if Projects.objects.filter(pk = int(pk)).first().idOwner.id == request.user.id:
@@ -76,7 +77,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         item = Projects.objects.get(pk = pk)
-        return Response({"Project": ProjectAuthorizeSerializer(item).data, "Meneger": Users.objects.filter(pk = item.idOwner.pk).first().name})
+        return Response({"Project": ProjectUnAuthorizeSerializer(item).data})
 
     def byTitle(self, request, title = "", *args, **kwargs):
       queryset =  Projects.objects.filter(title__contains=str(title))
@@ -175,8 +176,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       if not up == "" and down =="": 
         queryset = queryset[int(down):int(up)]
 
-      projects = [ {"Project": ProjectUnAuthorizeSerializer(item).data, "Meneger":Users.objects.filter(pk = item.idOwner.pk).first().name} for item in queryset ]
-      return Response(projects)
+      return Response(ProjectUnAuthorizeSerializer(queryset, many = True).data)
         
     def get_queryset(self):
         return  Projects.objects.all()
@@ -212,7 +212,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         return Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED)
 
 
-    @action(detail=True,methods=['GET','POST'])
+    @action(detail=True,methods=['GET'])
     def getImages(self,request,pk=None, *args, **kwargs):
           project =Projects.objects.filter(pk = pk).first()
 
@@ -240,26 +240,28 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       
     @action(detail=False,methods=['POST','GET'])
     def myProjects(self,request, *args, **kwargs):
-      data = request.data
-      sorting = data.get('sort',"")
-      title_contain =  data.get('titlecontain',"")
-      desc_contain = data.get('descecontain',"")
-      up =  data.get('up',"")
-      down =  data.get('down',0)
-      queryset = Projects.objects.filter( idOwner__id = int(request.user.id))
-      if not title_contain == "":
-        queryset = queryset.filter(title__icontains=str(title_contain))
-      
-      if (not desc_contain ==""):
-          queryset = queryset.filter(decription__icontains=str(desc_contain))
+      if request.user.id != None:
+        data = request.data
+        sorting = data.get('sort',"")
+        title_contain =  data.get('titlecontain',"")
+        desc_contain = data.get('descecontain',"")
+        up =  data.get('up',"")
+        down =  data.get('down',0)
+        queryset = Projects.objects.filter( idOwner__id = int(request.user.id))
+        if not title_contain == "":
+          queryset = queryset.filter(title__icontains=str(title_contain))
+        
+        if (not desc_contain ==""):
+            queryset = queryset.filter(decription__icontains=str(desc_contain))
 
-      if (not sorting == ""):
-        queryset = queryset.order_by(sorting)
+        if (not sorting == ""):
+          queryset = queryset.order_by(sorting)
 
-      if not up == "" and down =="": 
-        queryset = queryset[int(down):int(up)]
+        if not up == "" and down =="": 
+          queryset = queryset[int(down):int(up)]
 
-      return Response(ProjectUnAuthorizeSerializer(queryset,many = True).data)
+        return Response(ProjectUnAuthorizeSerializer(queryset,many = True).data)
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
 
    #def perform_create(self, serializer):
     #    return serializer.save(owner=self.request.user)

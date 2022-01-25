@@ -1,17 +1,10 @@
-import os
-from sys import path
-from django.db import models
-from django.http.response import JsonResponse
-#from rest_framework.decorators import permission_classes
+
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import *
-from rest_framework.parsers import JSONParser
 from rest_framework import viewsets, permissions
-from django.db.models import Avg
 from .serializers import *
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
+
 
 class ApplicationsViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
@@ -34,11 +27,21 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
         return Response({"detail":"Błąd autoryzacji"})
 
     def create_in_advertisment(request,pk):
+      # data = request.data
+      # if data.get("description", "") == "":
+      #   return Response({"detail":"Brak description"})
+      # p =Applications( idUser_id = request.user.id, idAdvertisement_id = int(pk),description = data.get("description"))
+      # p.save()
+      # return Response({"detail":"Udało sie utworzyć zgłoszenie"})
+
       data = request.data
+      if pk == None:
+        return Response({"detail":"Brak idAdvertisement"})
       if data.get("description", "") == "":
         return Response({"detail":"Brak description"})
-      p =Applications( idUser_id = request.user.id, idAdvertisement_id = int(pk),description = data.get("description"))
-      p.save()
+      Applications.objects.update_or_create( idUser = request.user,
+      idAdvertisement_id = int(pk),
+      defaults = { "description" : data.get("description")})
       return Response({"detail":"Udało sie utworzyć zgłoszenie"})
    
     def create(self, request, *args, **kwargs):
@@ -47,11 +50,9 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
         return Response({"detail":"Brak idAdvertisement"})
       if data.get("description", "") == "":
         return Response({"detail":"Brak description"})
-      p =Applications( idUser = request.user.id,
-      idAdvertisement = int(data.get("idAdvertisement")),
-      description = data.get("description")
-      )
-      p.save()
+      Applications.objects.create_or_update( idUser = request.user,
+      idAdvertisement__id = int(data.get("idAdvertisement")),
+      defaults = { "description" : data.get("description")})
       return Response({"detail":"Udało sie utworzyć zgłoszenie"})
 
     def update(self, request, pk=None, *args, **kwargs):

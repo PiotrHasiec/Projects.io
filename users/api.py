@@ -1,6 +1,6 @@
 import os
 from rest_framework.decorators import action, permission_classes
-from .models import  Users, RatingUsers,Projects
+from .models import  CollaboratorsProject, Users, RatingUsers,Projects
 from rest_framework import response, viewsets, permissions, status
 from .serializers import *
 from django.db.models import Avg
@@ -37,21 +37,48 @@ class UserViewSet(viewsets.ModelViewSet):
           return response.Response({"User":OtherUserSerializer(item).data,"isOwner":"False"})
 
 
+    @action(detail=True,methods=['GET'])
+    def amCollaborator(self, request,pk=None, **kwargs):
+      if request.user.id !=None:
+          projectsWhereRatingUserHaveColaboration = CollaboratorsProject.objects.filter(idUser=request.user ).defer("idPosition","idUser").select_related("idProject").distinct()
+          projectsWhereRatedUserHaveColaboration = CollaboratorsProject.objects.filter(idUser=int(pk) ).defer("idPosition","idUser").select_related("idProject").distinct()
+          projectsWhereRatingUserIsOwner = Projects.objects.filter(idOwner=request.user )
+          projectsWhereRatedUserIsOwner = Projects.objects.filter(idOwner=int(pk) )
+          aa = any([ i.idProject.id == j.idProject.id  for i in projectsWhereRatingUserHaveColaboration for j in projectsWhereRatedUserHaveColaboration ])
+          bb = any([ k.id == j.idProject.id for j in projectsWhereRatedUserHaveColaboration for k in projectsWhereRatingUserIsOwner])
+          cc = any([l.id == i.idProject.id for l in projectsWhereRatedUserIsOwner for i in projectsWhereRatingUserHaveColaboration])
+          if( aa  or bb or cc ):
+            return response.Response("True")
+          return response.Response("False")
+      return response.Response("False")
+     
+
     @action(detail=True,methods=['POST'])
     def mark(self, request,pk=None, **kwargs):
         if request.method == 'POST':
-          data = request.POST
-        #request.user.id
-        #if 
-          RatingUsers.objects.update_or_create( idRatedUser_id = int(pk),
-                                      idUser_id =int(data.get("idUser",None)),
-                                      defaults = {'mark':  data.get("mark",None)} )
+          data = request.data
+        
+          projectsWhereRatingUserHaveColaboration = CollaboratorsProject.objects.filter(idUser=request.user ).defer("idPosition","idUser").select_related("idProject").distinct()
+          projectsWhereRatedUserHaveColaboration = CollaboratorsProject.objects.filter(idUser=int(pk) ).defer("idPosition","idUser").select_related("idProject").distinct()
+          projectsWhereRatingUserIsOwner = Projects.objects.filter(idOwner=request.user )
+          projectsWhereRatedUserIsOwner = Projects.objects.filter(idOwner=int(pk) )
 
-
+          aa = any([ i.idProject.id == j.idProject.id  for i in projectsWhereRatingUserHaveColaboration for j in projectsWhereRatedUserHaveColaboration ])
+          bb = any([ k.id == j.idProject.id for j in projectsWhereRatedUserHaveColaboration for k in projectsWhereRatingUserIsOwner])
+          cc = any([l.id == i.idProject.id for l in projectsWhereRatedUserIsOwner for i in projectsWhereRatingUserHaveColaboration])
+          if( aa  or bb or cc ):
           
-        mark =RatingUsers.objects.filter(idRatedUser_id = pk).aggregate(avg_mark = Avg('mark'))
-        Users.objects.filter(pk = pk).update(averageRate = mark['avg_mark'])
-        return response.Response()
+            mark = int(int(data.get("rate",""))/20)
+            RatingUsers.objects.update_or_create( idRatedUser_id = int(pk),
+                                        idUser = request.user ,
+                                        defaults = {'mark':  mark} )
+
+
+            
+            mark =RatingUsers.objects.filter(idRatedUser_id = pk).aggregate(avg_mark = Avg('mark'))
+            Users.objects.filter(pk = pk).update(averageRate = mark['avg_mark'])
+            return response.Response()
+        return response.Response("AAAAAAAAAAAAA")
 
     def list(self, request, *args, **kwargs):
       sorting = request.GET.get('sort',"")
@@ -108,10 +135,10 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True,methods=['POST'])
     def upload_avatar(self,request,pk=None, *args, **kwargs):
-      if(request.user.id == pk):
+      if(request.user.id == int(pk)):
         uploaded_file= request.FILES['avatar']
         name = UserViewSet.extension(self, uploaded_file)
-        if (uploaded_file.size < 65536):
+        if (uploaded_file.size < 6553600):
           if (name == ".jpg" or name == ".bmp" or name == ".png"):
              
             path = default_storage.save('./frontend/public/FileBase/'+str(request.user.id)+'/avatar'+name, ContentFile(uploaded_file.read()))

@@ -11,16 +11,7 @@ class AdvertismentProjectUnAuthorizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisements
         fields = ("idProject","idUser", "idPosition")   
-#CollaboratorsProject 
-class CollaboratorsProjectAuthorizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CollaboratorsProject
-        fields = "__all__"
-        
-class CollaboratorsProjectUnAuthorizeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CollaboratorsProject
-        fields = ("idProject","idUser", "idPosition")        
+      
      
 
 # Applications
