@@ -32,8 +32,15 @@ const UserPage = ({isAuthenticated }) => {
 
     useEffect(() => {
         getProfile();
-        getProjects();
     }, []);
+
+    useEffect(() => {
+        if(isAuthenticated === true){
+            getProjects();
+            isCollaborator();
+        }
+    
+      }, [isAuthenticated]);
 
     const popupDeleteCloseHandler = (e) => {
         setVisibility(e);
@@ -88,6 +95,8 @@ const UserPage = ({isAuthenticated }) => {
             mode: 'cors',
             headers:{
                 'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+
             }
         })
           .then(response => response.json())
@@ -100,6 +109,25 @@ const UserPage = ({isAuthenticated }) => {
             setError2(true);
           });
     }
+
+    const isCollaborator = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/amCollaborator/`.replace(":id", location[2]), {
+            method: 'GET',
+            mode: 'cors',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            }
+        })
+          .then(response => response.json())
+          .then(responseJson => {
+
+          })
+          .catch(error => {
+
+          });
+    }
+
 
     const onClickRateProfile = (e) =>{
         rateProfile();
