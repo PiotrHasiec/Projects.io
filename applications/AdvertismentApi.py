@@ -38,6 +38,8 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
                         "description":item.description,
                         "idAdvertisment":item.id,
                         "idProject":item.idProject.id,
+                        
+                        "Aplications":ApplicationsUnAuthorizeSerializer(Applications.objects.filter(idAdvertisement = item,idAdvertisement__idProject__idOwner_id = request.user.id),many=True).data
                         }for item in advertisements]
 
         return Response(toResponse)

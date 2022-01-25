@@ -73,31 +73,34 @@ class ApplicationsViewSet(viewsets.ModelViewSet):
         user = request.user
         user_id =user.id
 
-        item = Applications.objects.get(pk = pk).first()
-        ad_item = Advertisements.objects.get(pk = item.idAdvertisement.id)
-        project_item = Projects.objects.get(pk = ad_item.idOwner.id)
+        item = Applications.objects.get(pk = pk)
+        ad_item = item.idAdvertisement
+        project_item = ad_item.idProject
         
         project_owner_id = project_item.idOwner.id
         
         if user_id == project_owner_id:   
            state = request.data.get("acceptionState")
-           if state == "P" or "pending":
+           if state == "P" :
+             CollaboratorsProject.objects.filter(idProject = item.idAdvertisement.idProject,idUser= item.idUser ,idPosition = item.idAdvertisement.idPosition).delete()
              item.acceptionState = Applications.AcceptionStates.PENDING
-           elif state == "A" or "accepted":
+           elif state == "A" :
              item.acceptionState = Applications.AcceptionStates.ACCEPTED
-           elif state == "R" or "rejected":
+             colaborator = CollaboratorsProject(idProject = item.idAdvertisement.idProject,idUser= item.idUser ,idPosition = item.idAdvertisement.idPosition)
+             colaborator.save()
+           elif state == "R" :
              item.acceptionState = Applications.AcceptionStates.REJECTED
-           else:
+        else:
              return Response({"detail":"Błąd autoryzacji"})
-           item.save()
-           return Response()
+        item.save()
+        return Response()
         
 
     def list(self, request, *args, **kwargs):
 
       #TODO Wyświetl wszystkie zgłoszenia przyporządkowane do użytkownika który wysyła zapytanie
       data = request.data
-      Applications_ = Applications.objects.filter( idUser =request.user.id )
+      Applications_ = Applications.objects.filter( idUser =request.user )
       return Response(ApplicationsAuthorizeSerializer(Applications_,many = True).data)
         
 

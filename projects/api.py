@@ -143,11 +143,11 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
           data = request.data
         
-        
+          mark = int(int(data.get("rate",None))/20)
         
           RatingProject.objects.update_or_create(idProject_id = int(pk),
                                       idUser_id =int(request.user.id),
-                                      defaults = {'mark':  data.get("mark",None)} )
+                                      defaults = {'mark': mark} )
 
 
           
@@ -217,6 +217,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
           project =Projects.objects.filter(pk = pk).first()
 
           onlyfiles = [str( project.presentation )+f for f in listdir(str( project.presentation )) if isfile(join(str( project.presentation ), f))]
+          if len(onlyfiles) == 0:
+            onlyfiles =list(["./frontend/public/logo512.png"])
           return Response(onlyfiles)
 
     @action(detail=True,methods=['POST'])
