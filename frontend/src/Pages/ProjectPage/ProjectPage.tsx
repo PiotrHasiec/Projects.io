@@ -1,5 +1,4 @@
 import React, { Component, ReactNode, useState, useEffect } from "react"
-import NavBar from "../../Component/NavBar/NavBar";
 import "./ProjectPage.css"
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
@@ -18,14 +17,22 @@ const ProjectPage = ({isAuthenticated}) => {
   const [error, setError] = useState(false);
   const [owner, setOwner] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [rate, setRate] = useState(0) 
+  const [rate, setRate] = useState(0);
+  const [advertismentId, setAdvertismentId] = useState('');
   const location = window.location.pathname.split("/");
   useEffect(() => {
       getObject();
       getProjectImages();
+      getCollaborators();
+  }, []);
+
+  useEffect(() => {
+    if(isAuthenticated === true){
       isOwner();
       getAdvertisments();
-  }, []);
+    }
+
+  }, [isAuthenticated]);
 
   const onClick = e =>{
       deleteObject();
@@ -35,15 +42,21 @@ const ProjectPage = ({isAuthenticated}) => {
     setRate(rate)
   }
 
-  const [visibility, setVisibility] = useState(false);
+  const [visibilityAdvertisment, setVisibilityAdvertisment] = useState(false);
+  const [visibilityAplication, setVisibilityAplication] = useState(false);
 
-  const popupDeleteCloseHandler = (e) => {
-    setVisibility(e);
+  const popupDeleteCloseHandlerAdvertisment = (e) => {
+    setVisibilityAdvertisment(e);
   };
+  const popupDeleteCloseHandlerAplication = (e) => {
+    setVisibilityAplication(e);
+  };
+
+
   //Advertisment
   const [formData, setFormData] = useState({
     position: '',
-    description: ''
+    description: '',
   });
   const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
   const { position, description } = formData;
@@ -51,6 +64,16 @@ const ProjectPage = ({isAuthenticated}) => {
   const onSubmitAdvisement = e => {
     e.preventDefault();
     postAdvisement();
+  }
+
+  const setIdApicationAndShowPopup = (e) => {
+    setVisibilityAplication(true);
+    setAdvertismentId(e);
+  }
+
+  const onSubmitAplication = e => {
+    e.preventDefault();
+    postAplication();
   }
 
   const postAdvisement = () => {
@@ -65,9 +88,29 @@ const ProjectPage = ({isAuthenticated}) => {
     })
       .then(response => response.json())
       .then(responseJson => {
-        setVisibility(false);
+        setVisibilityAdvertisment(false);
         getAdvertisments();
       })
+      .catch(error => {
+
+      });
+  }
+
+  const postAplication = () => {
+    return fetch(`${process.env.REACT_APP_REMOTE_URL}/Advertisements/api/Advertisment/:id/createApplication/`.replace(":id", advertismentId), {
+        method: 'POST',
+        mode: 'cors',
+        headers:{
+            'Content-Type': 'application/json',
+            'Authorization': `JWT ${localStorage.getItem('access')}`
+        },
+        body: JSON.stringify({ description })
+    })
+      .then(response => {
+        setVisibilityAplication(false);
+        getAdvertisments();
+      })
+      
       .catch(error => {
 
       });
@@ -89,6 +132,22 @@ const ProjectPage = ({isAuthenticated}) => {
     .catch(error => {
       setLoading(false);
       setError(true);
+    });
+  }
+
+  const getCollaborators = () => {
+    return fetch(`${process.env.REACT_APP_REMOTE_URL}/Collaborators/api/Collaborators/?project=:id`.replace(":id", location[2]), {
+      method: 'GET',
+      mode: 'cors',
+      headers:{
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(responseJson => {
+
+    })
+    .catch(error => {
     });
   }
 
@@ -181,10 +240,9 @@ const ProjectPage = ({isAuthenticated}) => {
 
   const onClickAcceptApplication = (e) =>{
     acceptApplication2(e.target.value);
-    //debugger;
   } 
+  
   const acceptApplication2 = (id: string) => {
-    //debugger;
     return fetch(`${process.env.REACT_APP_REMOTE_URL}/Applications/api/Applications/:id/changeState/`.replace(":id", id), {
       method: 'POST',
       mode: 'cors',
@@ -207,9 +265,6 @@ const ProjectPage = ({isAuthenticated}) => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/getImages/`.replace(":id", location[2]), {
             method: 'GET',
             mode: 'cors',
-            headers:{
-                'Authorization': `JWT ${localStorage.getItem('access')}`
-            }
         })
           .then(response => response.json())
           .then(responseJson => {
@@ -237,6 +292,26 @@ const ProjectPage = ({isAuthenticated}) => {
             //setError(true);
           });
     }
+
+
+    const onClickDeleteApplication = (e) =>{
+      deleteAplication(e.target.value);
+    } 
+    const deleteAplication = (id: string) => {
+      return fetch(`${process.env.REACT_APP_REMOTE_URL}/Advertisements/api/Advertisment/:id/createApplication/`.replace(":id", id), {
+          method: 'DELETE',
+          mode: 'cors',
+          headers:{
+              'Content-Type': 'application/json',
+              'Authorization': `JWT ${localStorage.getItem('access')}`
+          }
+      })
+        .then(response => {
+        })
+        .catch(error => {
+          //setError(true);
+        });
+  }
 
     if(isDeleted){
         return <Navigate replace to="/" />
@@ -290,7 +365,7 @@ const ProjectPage = ({isAuthenticated}) => {
                             </tr>
                             <tr>
                                 <td><text>Owner:</text></td>
-                                <td><text>{project["Meneger"]}</text></td>
+                                <td><text>{project["Project"]["Manager"]}</text></td>
                             </tr>
                             <tr>
                                 <td><text>Rate:</text></td>
@@ -306,11 +381,11 @@ const ProjectPage = ({isAuthenticated}) => {
                              { isAuthenticated && owner &&
                             <tr>
                                 <td>
-                                    <button className="btn btn-primary" onClick={(e) => setVisibility(!visibility)}>Add advisement</button>
+                                    <button className="btn btn-primary" onClick={(e) => setVisibilityAdvertisment(!visibilityAdvertisment)}>Add advisement</button>
                                     <CustomPopup
-                                      onClose={popupDeleteCloseHandler}
-                                      show={visibility}
-                                      title="Delete Profile"
+                                      onClose={popupDeleteCloseHandlerAdvertisment}
+                                      show={visibilityAdvertisment}
+                                      title="Add advertisment"
                                       >
                                         <div className="input-group mb-3">
                                           <form onSubmit={e => onSubmitAdvisement(e)}>
@@ -342,17 +417,38 @@ const ProjectPage = ({isAuthenticated}) => {
                     <div>
                         <h1>{advertisment["namePosition"]}</h1>
                         <p>{advertisment["description"]}</p>
-                        { !owner && <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
-                                        <button className="btn btn-primary" >Add application</button>
-                                    </Link>} 
-                        { owner && advertisment["Aplications"].map(aplication => 
+                        { !owner && advertisment["Aplications"].length === 0 && 
+                                        <button className="btn btn-primary" onClick={(e) => setIdApicationAndShowPopup(advertisment["idAdvertisment"])}>Add application</button>
+                                    } 
+                        { !owner && advertisment["Aplications"].length !== 0 && <h2>Your aplications:</h2>}
+                        {  advertisment["Aplications"].map(aplication => 
                           <div>
                             <h3>{aplication["description"]}</h3>
+                            { owner && 
                             <Link to={"/user/:id".replace(":id", aplication["idUser"])}>
                               {aplication["userName"]}
-                            </Link>
-                            <button className="btn btn-outline-secondary" type="button" name="aplication" value={aplication["id"]} onClick={e => onClickAcceptApplication(e)}>Accept</button>
-                          </div>)}                       
+                            </Link> }
+                            { owner && <button className="btn btn-outline-secondary" type="button" name="aplication" value={aplication["id"]} onClick={e => onClickAcceptApplication(e)}>Accept</button> }
+                            { !owner && <div>
+                                        <button className="btn btn-primary" onClick={(e) => setIdApicationAndShowPopup(advertisment["idAdvertisment"])}>Edit</button>
+                                    <button className="btn btn-danger" name="aplication" value={advertisment["idAdvertisment"]} onClick={e => onClickDeleteApplication(e)}>Delete</button>
+                                    </div>
+                                    } 
+                          </div>)}
+                          <CustomPopup
+                              onClose={popupDeleteCloseHandlerAplication}
+                              show={visibilityAplication}
+                              title="Aplication"
+                              >
+                            <div className="input-group mb-3">
+                              <form onSubmit={e => onSubmitAplication(e)}>
+                              <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
+                              
+                              <button className="btn btn-outline-secondary" type="submit">Add</button>
+                            
+                              </form>
+                            </div>
+                          </CustomPopup>                       
                     </div>
                     )  
                 }
