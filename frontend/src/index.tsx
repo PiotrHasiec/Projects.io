@@ -26,15 +26,15 @@ const routing = (
       <Router>
         <Layout>
           <Routes>
-
+      
             <Route path="/" element={<MainPage />} />
             <Route path="/Projects" element={<SearchProject />} />
             <Route path="/Projects/:id" element={<ProjectPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/projects/create" element={<CreateProject />} />
-            <Route path="/projects/:id/edit" element={< ProjectPropertiesPage/>} />
-            <Route path="/projects/:id/upload" element={< UploadProjectFiles/>} />
+            <Route path="/projects/:id/edit" element={< ProjectPropertiesPage />} />
+            <Route path="/projects/:id/upload" element={< UploadProjectFiles />} />
             <Route path="/user/:id" element={<UserPage />} />
             <Route path="/user/edit" element={<UserPropertiesPage />} />
             <Route path="/projects/:id/aplication/create" element={<AddAplication />} />

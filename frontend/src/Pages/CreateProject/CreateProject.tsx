@@ -56,13 +56,13 @@ const CreateProject = ({isAuthenticated, user}) => {
     return (
         <div>
             <div>
-                <div id="LoginCard">
+                <div id="CreateCard">
                     <h1>Create Project</h1>
                     <h3></h3>
                     <div className="input-group mb-3">
                         <form onSubmit={e => onSubmit(e)}>
                         <input type="text" className="form-control" name="title" value={title} onChange={e => onChange(e)} placeholder="Title of the project" aria-label="Project name" aria-describedby="basic-addon2"/>
-                        <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
+                        <textarea placeholder="  Description" name="description" value={description} onChange={e => onChange(e)}></textarea>
                         
                         <button className="btn btn-outline-secondary" type="submit">Create</button>
                        
