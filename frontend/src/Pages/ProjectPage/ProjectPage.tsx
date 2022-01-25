@@ -4,49 +4,93 @@ import "./ProjectPage.css"
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
 import CustomPopup from "../../Component/CustomPopup/CustomPopup";
-import { saveAs } from 'file-saver'
-import Carousel from 'react-bootstrap/Carousel' 
+import { saveAs } from 'file-saver';
+import Carousel from 'react-bootstrap/Carousel';
+import { Rating } from 'react-simple-star-rating';
 
 const ProjectPage = ({isAuthenticated}) => {
 
-    const [project, setProject] = useState([]);
-    const [imgPaths, setImgPaths] = useState([]);
-    const [advertisments, setAdvertisments] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [loadingAdv, setLoadingAdv] = useState(true);
-    const [error, setError] = useState(false);
-    const [owner, setOwner] = useState(false);
-    const [isDeleted, setIsDeleted] = useState(false);
-    const location = window.location.pathname.split("/");
-    useEffect(() => {
-        getObject();
-        getProjectImages();
-        isOwner();
+  const [project, setProject] = useState([]);
+  const [imgPaths, setImgPaths] = useState([]);
+  const [advertisments, setAdvertisments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingAdv, setLoadingAdv] = useState(true);
+  const [error, setError] = useState(false);
+  const [owner, setOwner] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [rate, setRate] = useState(0) 
+  const location = window.location.pathname.split("/");
+  useEffect(() => {
+      getObject();
+      getProjectImages();
+      isOwner();
+      getAdvertisments();
+  }, []);
+
+  const onClick = e =>{
+      deleteObject();
+  };
+
+  const handleRating = (rate: number) => {
+    setRate(rate)
+  }
+
+  const [visibility, setVisibility] = useState(false);
+
+  const popupDeleteCloseHandler = (e) => {
+    setVisibility(e);
+  };
+  //Advertisment
+  const [formData, setFormData] = useState({
+    position: '',
+    description: ''
+  });
+  const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const { position, description } = formData;
+
+  const onSubmitAdvisement = e => {
+    e.preventDefault();
+    postAdvisement();
+  }
+
+  const postAdvisement = () => {
+    return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/createAdvertisment/`.replace(":id", location[2]), {
+      method: 'POST',
+      mode: 'cors',
+      headers:{
+          'Content-Type': 'application/json',
+          'Authorization': `JWT ${localStorage.getItem('access')}`
+      },
+      body: JSON.stringify({ position, description })
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        setVisibility(false);
         getAdvertisments();
-    }, []);
+      })
+      .catch(error => {
 
-    const onClick = e =>{
-        deleteObject();
-    };
+      });
+  }
 
-    const getObject = () => {
-        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/?format=json`.replace(":id", location[2]), {
-            method: 'GET',
-            mode: 'cors',
-            headers:{
-                'Content-Type': 'application/json',
-            }
-        })
-          .then(response => response.json())
-          .then(responseJson => {
-            setProject([responseJson]);
-            setLoading(false);
-          })
-          .catch(error => {
-            setLoading(false);
-            setError(true);
-          });
-    }
+  const getObject = () => {
+    return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/?format=json`.replace(":id", location[2]), {
+      method: 'GET',
+      mode: 'cors',
+      headers:{
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(responseJson => {
+      setProject([responseJson]);
+      setLoading(false);
+    })
+    .catch(error => {
+      setLoading(false);
+      setError(true);
+    });
+  }
 
     const getAdvertisments = () => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/getAdvertisments/`.replace(":id", location[2]), {
@@ -108,6 +152,56 @@ const ProjectPage = ({isAuthenticated}) => {
           });
 
     }
+
+
+    const onClickRateProject = (e) =>{
+        rateProject();
+        
+    } 
+    const rateProject = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/mark/`.replace(":id", location[2]), {
+            method: 'POST',
+            mode: 'cors',
+            headers:{
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            },
+            body: JSON.stringify({rate: rate.toString()})
+        })
+            .then(response => response.json())
+            .then(responseJson => {
+              getObject();
+            //setLoading(false);
+            })
+            .catch(error => {
+            //setError(true);
+            });
+
+    }
+
+  const onClickAcceptApplication = (e) =>{
+    acceptApplication2(e.target.value);
+    //debugger;
+  } 
+  const acceptApplication2 = (id: string) => {
+    //debugger;
+    return fetch(`${process.env.REACT_APP_REMOTE_URL}/Applications/api/Applications/:id/changeState/`.replace(":id", id), {
+      method: 'POST',
+      mode: 'cors',
+      headers:{
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${localStorage.getItem('access')}`
+      },
+      body: JSON.stringify({"acceptionState": "A"})
+    })
+      .then(response => {})
+      
+      .catch(error => {
+      //setError(true);
+      });
+
+  }
+
     
     const getProjectImages = () => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/getImages/`.replace(":id", location[2]), {
@@ -128,7 +222,7 @@ const ProjectPage = ({isAuthenticated}) => {
     }
 
     const deleteObject = () => {
-        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/download/`.replace(":id", location[2]), {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/:id/`.replace(":id", location[2]), {
             method: 'DELETE',
             mode: 'cors',
             headers:{
@@ -212,13 +306,33 @@ const ProjectPage = ({isAuthenticated}) => {
                              { isAuthenticated && owner &&
                             <tr>
                                 <td>
-                                    <Link to={"/projects/:id/advisements/create".replace(":id", location[2])}>
-                                        <button className="btn btn-primary" >Add advisement</button>
-                                    </Link>
+                                    <button className="btn btn-primary" onClick={(e) => setVisibility(!visibility)}>Add advisement</button>
+                                    <CustomPopup
+                                      onClose={popupDeleteCloseHandler}
+                                      show={visibility}
+                                      title="Delete Profile"
+                                      >
+                                        <div className="input-group mb-3">
+                                          <form onSubmit={e => onSubmitAdvisement(e)}>
+                                          <input type="text" className="form-control" name="position" value={position} onChange={e => onChange(e)} placeholder="Position" aria-label="Project name" aria-describedby="basic-addon2"/>
+                                          <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
+                                          
+                                          <button className="btn btn-outline-secondary" type="submit">Add</button>
+                                      
+                                          </form>
+                                        </div>
+                                    </CustomPopup>
                                     <button className="btn btn-primary"  onClick={e => onClickGetProjectFIles(e)}>Download</button>
+                                    <br></br>
                                 </td>
                             </tr> 
                             }
+                            <tr>
+                                <td>
+                                    <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1}}/* Available Props */ />
+                                    <button className="btn btn-primary"  onClick={e => onClickRateProject(e)}>Rate</button>
+                                </td>
+                            </tr> 
                         </table>
                     </h4>
                 </div>
@@ -230,7 +344,15 @@ const ProjectPage = ({isAuthenticated}) => {
                         <p>{advertisment["description"]}</p>
                         { !owner && <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
                                         <button className="btn btn-primary" >Add application</button>
-                                    </Link>}                        
+                                    </Link>} 
+                        { owner && advertisment["Aplications"].map(aplication => 
+                          <div>
+                            <h3>{aplication["description"]}</h3>
+                            <Link to={"/user/:id".replace(":id", aplication["idUser"])}>
+                              {aplication["userName"]}
+                            </Link>
+                            <button className="btn btn-outline-secondary" type="button" name="aplication" value={aplication["id"]} onClick={e => onClickAcceptApplication(e)}>Accept</button>
+                          </div>)}                       
                     </div>
                     )  
                 }
