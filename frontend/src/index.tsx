@@ -19,6 +19,7 @@ import UserPage from './Pages/UserPage/UserPage';
 import UserPropertiesPage from './Pages/UserPropertiesPage/UserPropertiesPage';
 import ProjectPropertiesPage from './Pages/ProjectPropertiesPage/ProjectPropertiesPage';
 import UploadProjectFiles from './Pages/UploadProjectFiles/UploadProjectFiles';
+import SearchUser from './Pages/SearchUser/SearchUser';
 
 const routing = (
   <div>
@@ -37,6 +38,7 @@ const routing = (
             <Route path="/projects/:id/upload" element={< UploadProjectFiles />} />
             <Route path="/user/:id" element={<UserPage />} />
             <Route path="/user/edit" element={<UserPropertiesPage />} />
+            <Route path="/user" element={<SearchUser />} />
             <Route path="/projects/:id/aplication/create" element={<AddAplication />} />
           </Routes>
         </Layout>

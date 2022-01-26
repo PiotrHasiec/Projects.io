@@ -1,5 +1,34 @@
-#Search{
-   width: 60%;
+#mainPage{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 2em;
+    padding-right: 6em;
+    width: 100%;
+    overflow: auto;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+#mainPage *{
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#mainPage .cardProject{
+    width: 30%;
+    margin: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#mainPage .cardProject:hover{
+    color: #fff;
+    background-color: #222;
+}
+#SearchProject{
+    width: 52%;
     margin: 2em;
     display: flex;
     flex-direction: row;
@@ -7,23 +36,56 @@
 
 }
 
-#Search button{
+#SearchUser{
+    width: 40%;
+    margin: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-bottom: 0.2%;
+}
+
+#SearchUser .card-body{
+    text-align: center;
+}
+
+#SearchProject .card-body{
+    text-align: center;
+}
+
+#space{
+    height: 30%;
+}
+
+#SearchProject .card-body .input-group{
+    width: 100%;
+}
+
+#SearchProject button, #SearchUser button{
     background-color: #D61A46;
     color: #FBDFE6;
 }
 
-#Search .card-body{
+#SearchProject .card-body{
     width: 60%;
 }
 
-#Search figure{
+#SearchProject figure,  #SearchUser figure{
     width: 40%;
     text-align: center;
     height: auto;
 }
 
+#SearchProject figure{
+    margin: auto;
+}
+
+#SearchUser figure{
+    margin: auto;
+}
+
 img{
-    width: 80%;
+    width: 40%;
 }
 
 .fa-globe{
@@ -39,3 +101,17 @@ img{
     -o-animation: spin 60.0s infinite linear;
     font-size: 15em;
 }
+
+@media screen and (max-width: 1200px) {
+    #mainPage{
+        justify-content: center;
+        flex-direction: column;
+    }
+    #SearchProject{
+        width: 100%;
+    }
+    
+    #SearchUser{
+        width: 100%;
+    }
+  }

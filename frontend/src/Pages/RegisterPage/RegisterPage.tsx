@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react"
+import React, { Fragment, useEffect, useState } from "react"
 import "./RegisterPage.css"
 import { connect } from "react-redux";
 import { signup } from "../../Actions/auth";
@@ -10,6 +10,7 @@ import { Link, Navigate } from "react-router-dom";
 const RegisterPage = ({ signup, isAuthenticated, errors }) => {
 
     const [accountCreated, setAccountCreated] = useState(false);
+    const [navigate, setNavigate] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -18,6 +19,12 @@ const RegisterPage = ({ signup, isAuthenticated, errors }) => {
     });
 
     const { name, email, password, re_password } = formData;
+
+    useEffect(() => {
+        if(errors !== null && accountCreated){
+            setNavigate(true);
+        }
+    }, [errors]);
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -35,9 +42,7 @@ const RegisterPage = ({ signup, isAuthenticated, errors }) => {
     if (isAuthenticated) {
         return <Navigate to='/' />
     }
-    if (errors == null && accountCreated) {
-        return <Navigate to='/login' />
-    }
+
     
     return (
         <div>
@@ -48,13 +53,13 @@ const RegisterPage = ({ signup, isAuthenticated, errors }) => {
                     <div className="input-group mb-3">
                         <form onSubmit={e => onSubmit(e)}>
                             <input type="text" className="form-control" placeholder="Name" aria-label="Name" aria-describedby="basic-addon2" name="name" value={name} onChange={e => onChange(e)}/>
-                            {errors && <div id="errormessage">{errors["name"]}</div> }
+                            {errors!==null && errors["name"] && <div id="errormessage">{errors["name"]}</div> }
                             <input type="email" className="form-control" placeholder="E-mail" aria-label="E-mail" name="email" value={email} onChange={e => onChange(e)} aria-describedby="basic-addon2" />
-                            {errors && <div id="errormessage">{errors["email"]}</div> }
+                            {errors!==null && errors["email"] && <div id="errormessage">{errors["email"]}</div> }
                             <input type="password" className="form-control" placeholder="Password" aria-label="Password" name="password" value={password} onChange={e => onChange(e)} aria-describedby="basic-addon2" />
-                            {errors && <div id="errormessage">{errors["password"].map(password =>  <Fragment>{password + " "}</Fragment> )}</div> }
+                            {errors!==null && errors["password"] && <div id="errormessage">{errors["password"].map(password =>  <Fragment>{password + " "}</Fragment> )}</div> }
                             <input type="password" className="form-control" placeholder="Confirm password" aria-label="Confirm password" name="re_password" value={re_password} onChange={e => onChange(e)} aria-describedby="basic-addon2" />   
-                            {errors && <div id="errormessage">{errors["re_password"]}</div> }
+                            {errors!==null && errors["re_password"] && <div id="errormessage">{errors["re_password"]}</div> }
                             <button className="btn btn-outline-secondary" type="submit">Sign up</button>
                         </form>
                         <p className='m-auto'>

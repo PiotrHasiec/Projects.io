@@ -21,6 +21,7 @@ const SearchProject = () =>{
     titlecontain: projectName,
     direction: 'title'
   });
+  
   const { titlecontain, direction } = formData;
 
   const onChange = (e) => {

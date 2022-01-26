@@ -1,0 +1,25 @@
+#mainfooter{
+    position: fixed; 
+    width: 100%;
+    bottom: 0;
+}
+
+#footerContent{
+    background-color: #D51A46;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    color: #ddd;
+    width: 100%;
+    padding: 0.5em;
+}
+
+#footerContent #creators{
+    margin-right: 0.2em;
+    width: 50%;
+    text-align: right;
+}
+#footerContent #nazwa{
+    width: 50%;
+    
+}
