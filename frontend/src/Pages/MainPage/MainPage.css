@@ -1,29 +1,70 @@
-#Search{
-   width: 60%;
+#mainPage{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    padding: 2em;
+    padding-right: 6em;
+    width: 100%;
+    overflow: auto;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+#mainPage *{
+    box-sizing: border-box;
+    overflow: auto;
+}
+#SearchProject{
+    width: 60%;
     margin: 2em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-
 }
 
-#Search button{
+#SearchUser{
+    width: 40%;
+    margin: 2em;
+}
+
+#SearchUser .card-body{
+    text-align: center;
+}
+
+#SearchProject .card-body{
+    position: relative;
+}
+#SearchProject .card-body .input-group{
+    position:absolute;
+    bottom: 0;
+    width: 90%;
+}
+
+#SearchProject button, #SearchUser button{
     background-color: #D61A46;
     color: #FBDFE6;
 }
 
-#Search .card-body{
+#SearchProject .card-body{
     width: 60%;
 }
 
-#Search figure{
+#SearchProject figure,  #SearchUser figure{
     width: 40%;
     text-align: center;
     height: auto;
 }
 
+#SearchProject figure{
+    width: 30%;
+    margin-top: 0.2em;
+}
+#SearchUser figure{
+    margin: auto;
+}
+
 img{
-    width: 80%;
+    width: 60%;
 }
 
 .fa-globe{
@@ -39,3 +80,17 @@ img{
     -o-animation: spin 60.0s infinite linear;
     font-size: 15em;
 }
+
+@media screen and (max-width: 1200px) {
+    #mainPage{
+        justify-content: center;
+        flex-direction: column;
+    }
+    #SearchProject{
+        width: 100%;
+    }
+    
+    #SearchUser{
+        width: 100%;
+    }
+  }

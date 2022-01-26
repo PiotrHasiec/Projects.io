@@ -12,15 +12,16 @@ const MainPage = () =>
 {
 
   const [formData, setFormData] = useState({
-    projectname: ''
+    projectname: '',
+    userName: ''
   });
-  const { projectname } = formData;
+  const { projectname,userName } = formData;
 
   const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return(
-    <div>
-    <div id="Search" className="card">
+    <div id="mainPage">
+    <div id="SearchProject" className="card">
       <div className="card-body">
         <h2 className="card-title">Discover the projects!</h2>
         <p className="card-text">Whole world is waiting for you to search your project now</p>
@@ -36,6 +37,23 @@ const MainPage = () =>
       <figure>
           <img src={"../global.png"} className="fa fa-globe" alt="globe image"></img>
       </figure>
+    </div>
+    <div id="SearchUser" className="card">
+      <div className="card-body">
+        <figure>
+            <img src={"../hands.png"}  alt="globe image"></img>
+        </figure>
+        <h2 className="card-title">Search for co-workers</h2>
+        <p className="card-text">Search for people with similar skills and create new outstanding project!</p>
+        <div className="input-group mb-3">
+          <input type="text" className="form-control" placeholder="Nickname" aria-label="Project name" aria-describedby="basic-addon2" name="userName" value={userName} onChange={e => onChange(e)}/>
+          <div className="input-group-append">
+          <Link to="/user" state={{ userName: userName }} >
+            <button className="btn btn-outline-secondary" type="button">Search!</button>
+            </Link>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   );

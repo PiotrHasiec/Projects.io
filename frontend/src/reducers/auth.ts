@@ -56,7 +56,7 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 isAuthenticated: false,
-                errors: null
+                errors: null,
             }
         case LOGOUT:
             localStorage.removeItem('access');

@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import CustomPopup from "../../Component/CustomPopup/CustomPopup";
 import { Rating } from 'react-simple-star-rating';
 
-const UserPage = ({isAuthenticated }) => {
+const UserPage = ({ isAuthenticated }) => {
 
     const [profile, setProfile] = useState([]);
     const [projects, setProjects] = useState([]);
@@ -20,7 +20,7 @@ const UserPage = ({isAuthenticated }) => {
         password: ''
     });
     const { password } = formData;
-    
+
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
     const deleteProfile = e => {
@@ -35,57 +35,58 @@ const UserPage = ({isAuthenticated }) => {
     }, []);
 
     useEffect(() => {
-        if(isAuthenticated === true){
+        if (isAuthenticated === true) {
             getProjects();
             isCollaborator();
         }
-    
-      }, [isAuthenticated]);
+
+    }, [isAuthenticated]);
 
     const popupDeleteCloseHandler = (e) => {
         setVisibility(e);
     };
     const handleRating = (rate: number) => {
         setRate(rate)
-      }
+    }
 
     const deleteProfileFun = (current_password) => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/auth/users/me/`, {
             method: 'DELETE',
             mode: 'cors',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `JWT ${localStorage.getItem('access')}`
             },
             body: JSON.stringify({ current_password })
         })
-          .then(response => response.json())
-          .then(responseJson => {
+            .then(response => response.json())
+            .then(responseJson => {
                 localStorage.removeItem('access');
                 localStorage.removeItem('refresh');
-          })
-          .catch(error => {
-           
-          });
+            })
+            .catch(error => {
+
+            });
     }
 
     const getProfile = () => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/`.replace(":id", location[2]), {
             method: 'GET',
             mode: 'cors',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
             }
         })
-          .then(response => response.json())
-          .then(responseJson => {
-            setProfile([responseJson]);
-            setLoadingProfile(false);
-          })
-          .catch(error => {
-            setLoadingProfile(false);
-            setError1(true);
-          });
+            .then(response => response.json())
+            .then(responseJson => {
+                setProfile([responseJson]);
+                setLoadingProfile(false);
+            })
+            .catch(error => {
+                setLoadingProfile(false);
+                setError1(true);
+            });
     }
 
 
@@ -93,135 +94,158 @@ const UserPage = ({isAuthenticated }) => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/myProjects/`, {
             method: 'GET',
             mode: 'cors',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `JWT ${localStorage.getItem('access')}`
 
             }
         })
-          .then(response => response.json())
-          .then(responseJson => {
-            setProjects(responseJson);
-            setLoadingProjects(false);
-          })
-          .catch(error => {
-            setLoadingProjects(false);
-            setError2(true);
-          });
+            .then(response => response.json())
+            .then(responseJson => {
+                setProjects(responseJson);
+                setLoadingProjects(false);
+            })
+            .catch(error => {
+                setLoadingProjects(false);
+                setError2(true);
+            });
     }
 
     const isCollaborator = () => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/amCollaborator/`.replace(":id", location[2]), {
             method: 'GET',
             mode: 'cors',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `JWT ${localStorage.getItem('access')}`
             }
         })
-          .then(response => response.json())
-          .then(responseJson => {
+            .then(response => response.json())
+            .then(responseJson => {
 
-          })
-          .catch(error => {
+            })
+            .catch(error => {
 
-          });
+            });
     }
 
 
-    const onClickRateProfile = (e) =>{
+    const onClickRateProfile = (e) => {
         rateProfile();
-        
-    } 
+
+    }
     const rateProfile = () => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/mark/`.replace(":id", location[2]), {
             method: 'POST',
             mode: 'cors',
-            headers:{
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `JWT ${localStorage.getItem('access')}`
             },
-            body: JSON.stringify({rate: rate.toString()})
+            body: JSON.stringify({ rate: rate.toString() })
         })
             .then(response => response.json())
             .then(responseJson => {
                 getProfile();
-            //setLoading(false);
+                //setLoading(false);
             })
             .catch(error => {
-            //setError(true);
+                //setError(true);
             });
 
     }
 
+    const onClickBecomeDeveloper = (e) => {
+        becomeDeveloper();
+
+    }
+
+    const becomeDeveloper = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/`.replace(":id", location[2]), {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            },
+            mode: 'cors',
+            body: JSON.stringify({ "is_developer": 1 })
+        })
+            .then(response => response.json())
+            .then(responseJson => {
+                //setIdProject(responseJson.pk);
+            })
+            .catch(error => {
+
+            });
+    }
 
     return (
         <div>
-            { !loadingProfile && !error1 && profile.map(profile =>
-            <div id="Widget">
-            
-            <div id="Profile-card">
-                <h1><text>User Page</text></h1>
-                <img id="User-avatar" src={profile["User"]["avatar"].replace("./frontend/public/", "../")}></img>
-                <div id="Name-card">
-                    <h2><text>{profile["User"]["name"]}</text></h2>
-                    <h3><text>EMAIL</text></h3>
-                </div>
-                <div id="About-field">
-                    <h4><text>ABOUT</text></h4>
-                    <div id="About-text">
-                        <b><text>Text</text></b>
+            {!loadingProfile && !error1 && profile.map(profile =>
+                <div id="MainProjectDiv">
+
+                    <div id="Profile-card">
+                        <h1><text>User Page</text></h1>
+                        <img id="User-avatar" src={profile["User"]["avatar"].replace("./frontend/public/", "../")}></img>
+                        <div id="Name-card">
+                            <h2><text>{profile["User"]["name"]}</text></h2>
+                            <h3><text>EMAIL</text></h3>
+                        </div>
+                        <div id="About-field">
+                            <h4><text>ABOUT</text></h4>
+                            <div id="About-text">
+                                <b><text>Text</text></b>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div id="Details-card">
-                <h1><text>Details</text></h1>
-                <h4>
-                    <table>
-                        <tr>
-                            <td><text>Averange rate:</text></td>
-                            <td><text></text></td>
-                        </tr>
-                        <tr>
-                            <td> <text>Took part in:</text></td>
-                            <td> <text></text></td>
-                        </tr>
-                        <tr>
-                            <td><text>Skills:</text></td>
-                            <td><text></text></td>
-                        </tr>
-                    </table>
-                </h4>
-            </div>
-            <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1}}/* Available Props */ />
-            <button className="btn btn-primary"  onClick={e => onClickRateProfile(e)}>Rate</button>
-            { profile["isOwner"] == "True" && 
-                <div id="Owner-exclusive">
-                    <Link to="/user/edit" style={{ textDecoration: 'none' }}>
-                        <button type="button" className="btn">Edit profile</button>
-                    </Link>
+                    <div id="Details-card">
+                        <h1><text>Details</text></h1>
+                        <h4>
+                            <table>
+                                <tr>
+                                    <td><text>Averange rate:</text></td>
+                                    <td><text></text></td>
+                                </tr>
+                                <tr>
+                                    <td> <text>Took part in:</text></td>
+                                    <td> <text></text></td>
+                                </tr>
+                                <tr>
+                                    <td><text>Skills:</text></td>
+                                    <td><text></text></td>
+                                </tr>
+                            </table>
+                        </h4>
+                    </div>
+                    <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1 }}/* Available Props */ />
+                    <button className="btn btn-primary" onClick={e => onClickRateProfile(e)}>Rate</button>
+                    {profile["isOwner"] === "True" &&
+                        <div id="Owner-exclusive">
+                            <Link to="/user/edit" style={{ textDecoration: 'none' }}>
+                                <button type="button" className="btn">Edit profile</button>
+                            </Link>
 
-                    <button type="button" className="btn">Become developer</button>
-                    <button type="button" className="btn" onClick={(e) => setVisibility(!visibility)}>Delete profile</button>
-                    <CustomPopup
-                    onClose={popupDeleteCloseHandler}
-                    show={visibility}
-                    title="Delete Profile"
-                    >
-                        <h2>Type password to delete</h2>
-                        <form onSubmit={e => deleteProfile(e)}>
-                            <input type="password" name="password" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2"  value={password}
-                            onChange={e => onChange(e)}/>
-                            <button type="submit" className="btn">YES</button>
-                        </form>
-                    </CustomPopup>
+                            <button type="button" className="btn" onClick={(e) => becomeDeveloper()}>Become developer</button>
+                            <button type="button" className="btn" onClick={(e) => setVisibility(!visibility)}>Delete profile</button>
+                            <CustomPopup
+                                onClose={popupDeleteCloseHandler}
+                                show={visibility}
+                                title="Delete Profile"
+                            >
+                                <h2>Type password to delete</h2>
+                                <form onSubmit={e => deleteProfile(e)}>
+                                    <input type="password" name="password" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" value={password}
+                                        onChange={e => onChange(e)} />
+                                    <button type="submit" className="btn">YES</button>
+                                </form>
+                            </CustomPopup>
+                        </div>
+                    }
                 </div>
+            )
             }
         </div>
-            )
-        }
-       </div>
     );
 }
 

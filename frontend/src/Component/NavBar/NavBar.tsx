@@ -42,7 +42,7 @@ const NavBar = ({logout, isAuthenticated, user}) => {
 
                 <Dropdown.Menu>
                     <Dropdown.Item>{(user !== null) ? <Link to={"/user/:id".replace(":id", user.id) } style={{ textDecoration: 'none', color: "#D51A46"  }}>My profile</Link>: "" }</Dropdown.Item>
-                    <Dropdown.Item><Link to="/projects/create" style={{ textDecoration: 'none', color: "#D51A46" }}>Create project</Link></Dropdown.Item>
+                    { (user !== null && user["is_developer"]) ? <Dropdown.Item><Link to="/projects/create" style={{ textDecoration: 'none', color: "#D51A46" }}>Create project</Link></Dropdown.Item>: "" }
                     <Dropdown.Divider />
                     <Dropdown.Item onClick={logout_user}>Logout</Dropdown.Item>
                 </Dropdown.Menu>
