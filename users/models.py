@@ -38,11 +38,12 @@ class Users(AbstractBaseUser,PermissionsMixin):
     idRole = ForeignKey('Roles', on_delete=SET_NULL, null=True)
     email = EmailField(unique=True, null=False)
     name = CharField(max_length=50, unique=True, null=False)
-    avatar = CharField(max_length=100,default = "./frontend/public/FileBase/aaa.bmp")
-    description = TextField(max_length=255, blank=True, null=True)
+    avatar = CharField(max_length=100,default = "./frontend/public/FileBase/defaulAvatar.bmp")
+    description = TextField(max_length=855, blank=True, null=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2,default=0)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_developer = models.BooleanField(default=False)
    # owner = models.OneToOneField(User, related_name = "owners", on_delete=CASCADE,null=False)
     
     objects= UserAccountManager()
@@ -98,6 +99,7 @@ class CollaboratorsProject(models.Model):
     idPosition = ForeignKey('Positions', on_delete=SET_NULL, null=True)
 
     class Meta:
+        unique_together = (("idProject", "idUser"),)
         verbose_name = "Twórca"
         verbose_name_plural = "Twórcy"
 
@@ -113,7 +115,7 @@ class Positions(models.Model):
         verbose_name_plural = "Stanowiska"
 
 class Projects(models.Model):
-    idOwner = ForeignKey('Users', on_delete=SET_NULL, null=True)
+    idOwner = ForeignKey('Users', on_delete=CASCADE, null=True)
     title = TextField(max_length=50, null=False)
 
     class ProjectStages(TextChoices):
@@ -122,7 +124,7 @@ class Projects(models.Model):
         PlayGround = 'PG', 'PlayGround'
 
     stage = CharField(max_length=255, choices=ProjectStages.choices, default=ProjectStages.BRAINSTORM, null=False)
-    description = TextField(max_length=255, null=False)
+    description = TextField(max_length=1000, null=False)
     folder = FilePathField(path = "./frontend/public/FileBase/",allow_folders=True)
     presentation = FilePathField(path = "./frontend/public/FileBase/",allow_folders=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2, default=0)
@@ -174,9 +176,16 @@ class SkillsDeveloper(models.Model):
     idUser = OneToOneField('Users', primary_key=True, on_delete=CASCADE, null=False)
     Cpp = BooleanField(null=False, default=False)
     CSharp = BooleanField(null=False, default=False)
+    Python = BooleanField(null=False, default=False)
+    SQL = BooleanField(null=False, default=False)
+    Graphic3D = BooleanField(null=False, default=False)
+    Graphic2DRaster = BooleanField(null=False, default=False)
+    Graphic2DVector = BooleanField(null=False, default=False)
+    Assembler = BooleanField(null=False, default=False)
+    Other = TextField(max_length=255, null=True, blank=True)
 
     def __str__(self) -> str:
-        return self.idUser
+        return self.idUser.name
 
     class Meta:
         verbose_name = "Umiejętności dewelopera"

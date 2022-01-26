@@ -1,4 +1,5 @@
 import os
+from xml.etree.ElementInclude import default_loader
 from rest_framework.decorators import action, permission_classes
 from .models import  CollaboratorsProject, Users, RatingUsers,Projects
 from rest_framework import response, viewsets, permissions, status
@@ -9,32 +10,53 @@ from django.core.files.base import ContentFile
 from projects.serializers import ProjectUnAuthorizeSerializer
 
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
 
     serializer_class = UserSerializer
 
     def get_queryset(self):
         return  Users.objects.all()
 
-    @action(detail=False,methods=['POST','GET'])
+    @action(detail=False,methods=['GET'])
     def myData(self, request, *args, **kwargs):
         me = request.user
         return response.Response(UserSerializer(me).data)
 
+    @action(detail=False,methods=['POST','GET'])
+    def developer(self, request):
+      if request.method == 'GET':
+        
+        return response.Response(SkillsDeveloperSerializer(SkillsDeveloper()).data)
+      else:
+        skils = SkillsDeveloper.objects.get_or_create(idUser = request.user)
+        serializer = SkillsDeveloperSerializer(skils,data=request.data)
+        if serializer.is_valid():
 
+          SkillsDeveloper.objects.update_or_create(idUser = request.user, defaults=serializer.validated_data)
+          request.user.is_developer = True
+          request.user.save()
+        return response.Response({"detail":"pomyślnie udało się zostać developerem"}) 
     def partial_update (self, request, pk=None):
-        if request.user.id == int(pk):
+      if request.data.get("password",None) !=None:
+        return response.Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED) 
+      elif request.user.id == int(pk):
+        dict = request.data.copy().keys()
+        for key in dict:
+          if request.data.get(key,None) == "":
+            request.data.pop(key)
 
-           return super().partial_update(request, pk)
+        return super().partial_update(request, pk)
+      else:
         return response.Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED) 
        
 
     def retrieve(self, request, pk=None):
-        item = Users.objects.get(pk = pk)
+        user = Users.objects.get(pk = pk)
+        skills = SkillsDeveloper.objects.filter(idUser = user).first()
         if request.user.id == int(pk):
-          return response.Response({"User":UserSerializer(item).data,"isOwner":"True"})
+          return response.Response({"User":UserSerializer(user).data,"isOwner":"True","Skills":SkillsDeveloperSerializer(skills).data })
         else:
-          return response.Response({"User":OtherUserSerializer(item).data,"isOwner":"False"})
+          return response.Response({"User":OtherUserSerializer(user).data,"isOwner":"False","Skills":SkillsDeveloperSerializer(skills).data})
 
 
     @action(detail=True,methods=['GET'])
@@ -78,13 +100,14 @@ class UserViewSet(viewsets.ModelViewSet):
             mark =RatingUsers.objects.filter(idRatedUser_id = pk).aggregate(avg_mark = Avg('mark'))
             Users.objects.filter(pk = pk).update(averageRate = mark['avg_mark'])
             return response.Response()
-        return response.Response("AAAAAAAAAAAAA")
+        return response.Response({"detail":"Błąd autoryzacji"})
 
     def list(self, request, *args, **kwargs):
       sorting = request.GET.get('sort',"")
       name_contain =  request.GET.get('namecontain',"")
       desc_contain = request.GET.get('descecontain',"")
-      count =  request.GET.get('count',"")
+      down = int( request.GET.get('down',0))
+      up =  int(request.GET.get('up',100))
       queryset = Users.objects.all()
       if not name_contain == "":
         queryset = queryset.filter(name__icontains=str(name_contain))
@@ -95,8 +118,8 @@ class UserViewSet(viewsets.ModelViewSet):
       if (not sorting == ""):
         queryset = queryset.order_by(sorting)
 
-      if not count == "":
-        queryset = queryset[:int(count)]
+      if( down >=0 and up >down):
+        queryset = queryset[int(down):int(up)]
 
      
       return response.Response(OtherUserSerializer(queryset,many = True).data)
@@ -115,8 +138,8 @@ class UserViewSet(viewsets.ModelViewSet):
         sorting = request.GET.get('sort',"")
         title_contain =  request.GET.get('titlecontain',"")
         desc_contain = request.GET.get('descecontain',"")
-        up =  request.GET.get('up',"")
-        down =  request.GET.get('down',0)
+        up =  int(request.GET.get('up',10))
+        down =  int(request.GET.get('down',0))
         
         if not title_contain == "":
           queryset = queryset.filter(title__icontains=str(title_contain))
@@ -127,7 +150,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if (not sorting == ""):
           queryset = queryset.order_by(sorting)
 
-        if not up == "" and down =="": 
+        if( down >0 and up >down):
           queryset = queryset[int(down):int(up)]
 
         projects = [ {"Project": ProjectUnAuthorizeSerializer(item).data, "Meneger":Users.objects.filter(pk = item.idOwner.pk).first().name} for item in queryset ]

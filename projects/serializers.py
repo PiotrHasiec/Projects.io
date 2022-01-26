@@ -4,6 +4,7 @@ from users.models import Projects,RatingProject
 
 class ProjectAuthorizeSerializer(serializers.ModelSerializer):
     Manager = serializers.CharField(source='idOwner.name')
+    ManagerId = serializers.CharField(source='idOwner.id')
     Avatar = serializers.CharField(source='idOwner.avatar')
     class Meta:
         model = Projects
@@ -11,10 +12,11 @@ class ProjectAuthorizeSerializer(serializers.ModelSerializer):
         
 class ProjectUnAuthorizeSerializer(serializers.ModelSerializer):
     Manager = serializers.CharField(source='idOwner.name')
+    ManagerId = serializers.CharField(source='idOwner.id')
     Avatar = serializers.CharField(source='idOwner.avatar')
     class Meta:
         model = Projects
-        fields = ("pk","title", "averageRate", "stage", "description","Manager","Avatar")        
+        fields = ("pk","title", "averageRate", "stage", "description","Manager","Avatar","ManagerId")        
 class RatingProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = RatingProject

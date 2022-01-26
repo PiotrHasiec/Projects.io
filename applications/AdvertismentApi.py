@@ -21,11 +21,15 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
     def createApplication(self, request,pk = None, *args, **kwargs):
         #if pk == request.user.id:
         if request.method == 'POST':
-            return ApplicationsViewSet.create_in_advertisment(request,str(pk))
+            if request.user.is_developer:
+                return ApplicationsViewSet.create_in_advertisment(request,str(pk))
+            else:
+                return Response({"detail":"Żeby dodać aplikację włącz opcję developer w ustawieniach"})
         elif request.method == 'DELETE':
             aplicationToDelete = Applications.objects.filter(idAdvertisement_id = pk, idUser = request.user)
             aplicationToDelete.delete()
             return Response()
+        
         #return Response({"detail":"Błąd autoryzacji"})
 
     def list_in_project(request,pk = None):
@@ -38,7 +42,7 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
                             "idAdvertisment":item.id,
                             "idProject":item.idProject.id,
                             
-                            "Aplications":ApplicationsUnAuthorizeSerializer(Applications.objects.filter(idAdvertisement = item,idAdvertisement__idProject__idOwner_id = request.user.id),many=True).data
+                            "Aplications":ApplicationsUnAuthorizeSerializer(Applications.objects.filter(idAdvertisement = item,idAdvertisement__idProject__idOwner_id = request.user.id,acceptionState=Applications.AcceptionStates.PENDING ),many=True).data
                             }for item in advertisements]
         else:
             toResponse = [ {"nameProject": item.idProject.title, 
@@ -58,7 +62,7 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
         Advertisements.objects.filter(pk=advertismentId).delete()
 
     def destroy(self, request,pk = None, *args, **kwargs):
-        Advertisements.objects.filter(pk=pk,idOwner_id =int(request.user.id)).delete()
+        Advertisements.objects.filter(pk=pk,idProject__idOwner_id =int(request.user.id)).delete()
         return  Response()
     
     
