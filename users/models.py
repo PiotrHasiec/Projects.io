@@ -43,6 +43,7 @@ class Users(AbstractBaseUser,PermissionsMixin):
     averageRate = DecimalField(max_digits=3, decimal_places=2,default=0)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_developer = models.BooleanField(default=False)
    # owner = models.OneToOneField(User, related_name = "owners", on_delete=CASCADE,null=False)
     
     objects= UserAccountManager()

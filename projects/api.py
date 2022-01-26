@@ -4,7 +4,6 @@ from sys import path
 from django.db import models
 from django.http import FileResponse
 from django.http.response import JsonResponse
-#from rest_framework.decorators import permission_classes
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from applications.AdvertismentApi import AdvertisementsViewSet
@@ -15,7 +14,6 @@ from django.db.models import Avg
 from .serializers import *
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from applications.serializers import AdvertismentAuthorizeSerializer
 from os.path import join
 from os import listdir
 
@@ -161,8 +159,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       sorting = request.GET.get('sort',"")
       title_contain =  request.GET.get('titlecontain',"")
       desc_contain = request.GET.get('descecontain',"")
-      up =  request.GET.get('up',"")
-      down =  request.GET.get('down',0)
+      up =  int(request.GET.get('up',100))
+      down =  int(request.GET.get('down',0))
       queryset = Projects.objects.all()
       if not title_contain == "":
         queryset = queryset.filter(title__icontains=str(title_contain))
@@ -173,7 +171,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       if (not sorting == ""):
         queryset = queryset.order_by(sorting)
 
-      if not up == "" and down =="": 
+      if( down >0 and up >down):
         queryset = queryset[int(down):int(up)]
 
       return Response(ProjectUnAuthorizeSerializer(queryset, many = True).data)
@@ -188,14 +186,12 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     @action(detail=True,methods=['POST'])
     def upload_project_files(self,request,pk=None, *args, **kwargs):
         project =Projects.objects.filter(pk = pk).first()
-        
         if(request.user.id == project.idOwner.id):
           uploaded_file= request.FILES['document']
-          name = ProjectsViewSet.extension(self, uploaded_file)
+          extension = ProjectsViewSet.extension(self, uploaded_file)
           if (uploaded_file.size < 209_715_200):
-            queryset = Projects.objects.filter(pk = pk)
-            if (name == ".zip"):
-              path = default_storage.save("./"+str( project.folder )+'/project'+name, ContentFile(uploaded_file.read()))
+            if (extension == ".zip"):
+              path = default_storage.save("./"+str( project.folder )+'/project'+extension, ContentFile(uploaded_file.read()))
               return Response({"detail":"Pomyślnie przesłano plik"})
             return Response({"detail":"Nie poprawne rozszerzenie pliku"},status=status.HTTP_400_BAD_REQUEST)
           return Response({"detail":"Za duży plik"},status=status.HTTP_304_NOT_MODIFIED)
@@ -205,12 +201,22 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     def download(self,request,pk=None, *args, **kwargs):
         project =Projects.objects.filter(pk = pk).first()
         if(request.user.id == project.idOwner.id):
-
           f = open(str( project.folder )+'/project.zip', 'rb')
           return FileResponse(f)
-          
         return Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED)
 
+    @action(detail=True,methods=['DELETE'])
+    def delete_project_presentation(self,request,pk=None, *args, **kwargs):
+    
+      project =Projects.objects.filter(pk = pk).first()
+      image_name = request.data['image']
+      if(request.user.id == project.idOwner.id):
+        
+        if(os.path.isfile(project.presentation+"/"+image_name)):
+          os.remove(project.presentation+"/"+image_name) 
+          return Response({"detail":"Pomyślnie usunięto plik"})
+        return Response({"detail":"Plik nie istnieje"})
+      return Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=True,methods=['GET'])
     def getImages(self,request,pk=None, *args, **kwargs):
@@ -225,18 +231,25 @@ class ProjectsViewSet(viewsets.ModelViewSet):
     def upload_project_presentation(self,request,pk=None, *args, **kwargs):
       
         project =Projects.objects.filter(pk = pk).first()
-        
+        returnResponse = {}
         if(request.user.id == project.idOwner.id):
-          uploaded_file= request.FILES['document']
-          name = ProjectsViewSet.extension(self, uploaded_file)
-          if (uploaded_file.size < 209_715_200):
-            queryset = Projects.objects.filter(pk = pk)
-            if (name == ".png" or name == ".jpg"):
-              path = default_storage.save("./"+str( project.presentation)+'/project'+name, ContentFile(uploaded_file.read()))
-              return Response({"detail":"Pomyślnie przesłano plik"})
-            return Response({"detail":"Nie poprawne rozszerzenie pliku"},status=status.HTTP_400_BAD_REQUEST)
-          return Response({"detail":"Za duży plik"},status=status.HTTP_304_NOT_MODIFIED)
+          uploaded_files= request.FILES
+         
+          for file in uploaded_files.values():
+              name  = file.name
+              extention = ProjectsViewSet.extension(self, file)
+              if (file.size > 209_715_200_000):
+                returnResponse.update({name:"Za duży plik"})
+                continue
+              elif not (extention == ".png" or extention == ".jpg" or extention == ".jpeg"or extention == ".bmp"):
+                returnResponse.update({name:"Niepoprawne rozszerzenie pliku"})
+                continue
+              
+              default_storage.save("./"+str( project.presentation)+'/'+file.name+extention, ContentFile(file.read()))
+          return Response(returnResponse)
         return Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED)
+          #return Response({"detail":"Nie poprawne rozszerzenie pliku"},status=status.HTTP_400_BAD_REQUEST)
+          #return Response({"detail":"Za duży plik"},status=status.HTTP_304_NOT_MODIFIED)
       
     @action(detail=False,methods=['POST','GET'])
     def myProjects(self,request, *args, **kwargs):
@@ -245,8 +258,8 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         sorting = data.get('sort',"")
         title_contain =  data.get('titlecontain',"")
         desc_contain = data.get('descecontain',"")
-        up =  data.get('up',"")
-        down =  data.get('down',0)
+        up =  int(data.get('up', 10))
+        down =  int(data.get('down',0))
         queryset = Projects.objects.filter( idOwner__id = int(request.user.id))
         if not title_contain == "":
           queryset = queryset.filter(title__icontains=str(title_contain))
@@ -257,7 +270,7 @@ class ProjectsViewSet(viewsets.ModelViewSet):
         if (not sorting == ""):
           queryset = queryset.order_by(sorting)
 
-        if not up == "" and down =="": 
+        if( down >0 and up >down):
           queryset = queryset[int(down):int(up)]
 
         return Response(ProjectUnAuthorizeSerializer(queryset,many = True).data)

@@ -78,13 +78,14 @@ class UserViewSet(viewsets.ModelViewSet):
             mark =RatingUsers.objects.filter(idRatedUser_id = pk).aggregate(avg_mark = Avg('mark'))
             Users.objects.filter(pk = pk).update(averageRate = mark['avg_mark'])
             return response.Response()
-        return response.Response("AAAAAAAAAAAAA")
+        return response.Response({"detail":"Błąd autoryzacji"})
 
     def list(self, request, *args, **kwargs):
       sorting = request.GET.get('sort',"")
       name_contain =  request.GET.get('namecontain',"")
       desc_contain = request.GET.get('descecontain',"")
-      count =  request.GET.get('count',"")
+      down = int( request.GET.get('down',0))
+      up =  int(request.GET.get('up',100))
       queryset = Users.objects.all()
       if not name_contain == "":
         queryset = queryset.filter(name__icontains=str(name_contain))
@@ -95,8 +96,8 @@ class UserViewSet(viewsets.ModelViewSet):
       if (not sorting == ""):
         queryset = queryset.order_by(sorting)
 
-      if not count == "":
-        queryset = queryset[:int(count)]
+      if( down >=0 and up >down):
+        queryset = queryset[int(down):int(up)]
 
      
       return response.Response(OtherUserSerializer(queryset,many = True).data)
@@ -115,8 +116,8 @@ class UserViewSet(viewsets.ModelViewSet):
         sorting = request.GET.get('sort',"")
         title_contain =  request.GET.get('titlecontain',"")
         desc_contain = request.GET.get('descecontain',"")
-        up =  request.GET.get('up',"")
-        down =  request.GET.get('down',0)
+        up =  int(request.GET.get('up',10))
+        down =  int(request.GET.get('down',0))
         
         if not title_contain == "":
           queryset = queryset.filter(title__icontains=str(title_contain))
@@ -127,7 +128,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if (not sorting == ""):
           queryset = queryset.order_by(sorting)
 
-        if not up == "" and down =="": 
+        if( down >0 and up >down):
           queryset = queryset[int(down):int(up)]
 
         projects = [ {"Project": ProjectUnAuthorizeSerializer(item).data, "Meneger":Users.objects.filter(pk = item.idOwner.pk).first().name} for item in queryset ]
