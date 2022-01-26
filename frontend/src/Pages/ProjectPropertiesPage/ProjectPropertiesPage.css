@@ -1,4 +1,8 @@
-#Widget{
+#Widget {
+    border-radius: 15px;
+    background: #fff;
+    padding: 2%;
+    width: 40%;
     margin: auto;
     margin-top: 1em;
     border-radius: 0.25rem;
@@ -33,4 +37,5 @@
 #Widget input[type="file"]{
     width: 100%; 
     color: black;  
+
 }
