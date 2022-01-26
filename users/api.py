@@ -1,4 +1,5 @@
 import os
+from xml.etree.ElementInclude import default_loader
 from rest_framework.decorators import action, permission_classes
 from .models import  CollaboratorsProject, Users, RatingUsers,Projects
 from rest_framework import response, viewsets, permissions, status
@@ -21,24 +22,36 @@ class UserViewSet(viewsets.ModelViewSet):
         me = request.user
         return response.Response(UserSerializer(me).data)
 
+    @action(detail=False,methods=['POST','GET'])
+    def developer(self, request):
+      if request.method == 'GET':
+        
+        return response.Response(SkillsDeveloperSerializer(SkillsDeveloper()).data)
+      else:
+        skils = SkillsDeveloper.objects.get_or_create(idUser = request.user)
+        serializer = SkillsDeveloperSerializer(skils,data=request.data)
+        if serializer.is_valid():
 
+          SkillsDeveloper.objects.update_or_create(**serializer.validated_data)
+          request.user.is_developer = True
+          request.user.save()
+        return response.Response({"detail":"pomyślnie udało się zostać developerem"}) 
     def partial_update (self, request, pk=None):
       if request.data.get("password",None) !=None:
         return response.Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED) 
       elif request.user.id == int(pk):
-        if request.user.is_developer == True:
-          request.data.update({"is_developer":True})
         return super().partial_update(request, pk)
       else:
         return response.Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED) 
        
 
     def retrieve(self, request, pk=None):
-        item = Users.objects.get(pk = pk)
+        user = Users.objects.get(pk = pk)
+        skills = SkillsDeveloper.objects.filter(idUser = user).first()
         if request.user.id == int(pk):
-          return response.Response({"User":UserSerializer(item).data,"isOwner":"True"})
+          return response.Response({"User":UserSerializer(user).data,"isOwner":"True","Skills":SkillsDeveloperSerializer(skills).data })
         else:
-          return response.Response({"User":OtherUserSerializer(item).data,"isOwner":"False"})
+          return response.Response({"User":OtherUserSerializer(user).data,"isOwner":"False","Skills":SkillsDeveloperSerializer(skills).data})
 
 
     @action(detail=True,methods=['GET'])

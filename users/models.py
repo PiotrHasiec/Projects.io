@@ -175,9 +175,16 @@ class SkillsDeveloper(models.Model):
     idUser = OneToOneField('Users', primary_key=True, on_delete=CASCADE, null=False)
     Cpp = BooleanField(null=False, default=False)
     CSharp = BooleanField(null=False, default=False)
+    Python = BooleanField(null=False, default=False)
+    SQL = BooleanField(null=False, default=False)
+    Grapghic3D = BooleanField(null=False, default=False)
+    Grapghic2DRaster = BooleanField(null=False, default=False)
+    Grapghic2DVector = BooleanField(null=False, default=False)
+    Assembler = BooleanField(null=False, default=False)
+    Other = TextField(max_length=255, null=True, blank=True)
 
     def __str__(self) -> str:
-        return self.idUser
+        return self.idUser.name
 
     class Meta:
         verbose_name = "Umiejętności dewelopera"
