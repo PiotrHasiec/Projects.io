@@ -3,7 +3,6 @@ import "./ProjectPage.css"
 import { Link, Navigate } from 'react-router-dom';
 import { connect } from "react-redux";
 import CustomPopup from "../../Component/CustomPopup/CustomPopup";
-
 import { saveAs } from 'file-saver';
 import Carousel from 'react-bootstrap/Carousel';
 import { Rating } from 'react-simple-star-rating';
@@ -17,8 +16,11 @@ const ProjectPage = ({ isAuthenticated }) => {
   const [loading, setLoading] = useState(false);
   const [loadingAdv, setLoadingAdv] = useState(true);
   const [error, setError] = useState(false);
-  const [collaborators, setCollaborators] = useState(false);
+  const [collaborator, setCollaborator] = useState(false);
+  const [collaborators, setCollaborators] = useState([]);
   const [owner, setOwner] = useState(false);
+
+  const [idAdv, setidAdv] = useState('');
 
   const [isDeleted, setIsDeleted] = useState(false);
   const [rate, setRate] = useState(0);
@@ -27,6 +29,7 @@ const ProjectPage = ({ isAuthenticated }) => {
   useEffect(() => {
     getObject();
     getCollaborators();
+    getProjectImages();
   }, []);
 
   useEffect(() => {
@@ -38,7 +41,7 @@ const ProjectPage = ({ isAuthenticated }) => {
 
   }, [isAuthenticated]);
 
-  const onClick = e => {
+  const onClickDelete = e => {
     deleteObject();
   };
 
@@ -48,12 +51,21 @@ const ProjectPage = ({ isAuthenticated }) => {
 
   const [visibilityAdvertisment, setVisibilityAdvertisment] = useState(false);
   const [visibilityAplication, setVisibilityAplication] = useState(false);
+  const [visibilityDelete, setVisibilityDelete] = useState(false);
+  const [visibilityDeleteAdv, setVisibilityDeleteAdv] = useState(false);
+
 
   const popupDeleteCloseHandlerAdvertisment = (e) => {
     setVisibilityAdvertisment(e);
   };
   const popupDeleteCloseHandlerAplication = (e) => {
     setVisibilityAplication(e);
+  };
+  const popupDeleteCloseHandlerDelete = (e) => {
+    setVisibilityDelete(e);
+  };
+  const popupDeleteCloseHandlerDeleteAdv = (e) => {
+    setVisibilityDeleteAdv(e);
   };
 
 
@@ -149,9 +161,7 @@ const ProjectPage = ({ isAuthenticated }) => {
     })
       .then(response => response.json())
       .then(responseJson => {
-        if (responseJson === "True") {
-          setCollaborators(true);
-        }
+          setCollaborators(responseJson);
       })
       .catch(error => {
       });
@@ -192,6 +202,8 @@ const ProjectPage = ({ isAuthenticated }) => {
       .then(responseJson => {
         if (responseJson === "True")
           setOwner(true);
+        else if (responseJson === "Collaborator")
+          setCollaborator(true);
         //setLoading(false);
       })
       .catch(error => {
@@ -211,11 +223,10 @@ const ProjectPage = ({ isAuthenticated }) => {
       }
     })
       .then(response => response.blob())
-      .then(blob => saveAs(blob, project[0]["Project"]["title"]))
+      .then(blob => saveAs(blob, project[0]["Project"]["title"]+".zip"))
       .catch(error => {
         //setError(true);
       });
-
   }
 
 
@@ -275,7 +286,6 @@ const ProjectPage = ({ isAuthenticated }) => {
       mode: 'cors',
 
       headers: {
-        'Authorization': `JWT ${localStorage.getItem('access')}`
       }
 
     })
@@ -300,6 +310,27 @@ const ProjectPage = ({ isAuthenticated }) => {
     })
       .then(response => {
         setIsDeleted(true);
+      })
+      .catch(error => {
+        //setError(true);
+      });
+  }
+
+  const onClickDelAdv = (e) => {
+    deleteAdv();
+    setVisibilityDeleteAdv(!visibilityDeleteAdv);
+  }
+  const deleteAdv = () => {
+    return fetch(`${process.env.REACT_APP_REMOTE_URL}/Advertisements/api/Advertisment/:id/`.replace(":id", idAdv ), {
+      method: 'DELETE',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `JWT ${localStorage.getItem('access')}`
+      }
+    })
+      .then(response => {
+        getAdvertisments();
       })
       .catch(error => {
         //setError(true);
@@ -342,17 +373,33 @@ const ProjectPage = ({ isAuthenticated }) => {
 
             <div id="Promos-title">
               <h1><span>{project["Project"]["title"]}</span> </h1>
-              {isAuthenticated && (owner || collaborators) && <div id="functionalButton">
+              <div id="functionalButton">
+                <button className="btn btn-danger" aria-label="Left Align" type="button" title="Share" onClick={e => navigator.clipboard.writeText(window.location.href)}>
+                  <i className="fa fa-share"></i>
+                </button>
+              <a href="https://patronite.pl/" target="_blank">
+              <button className="btn btn-danger" aria-label="Left Align" type="button" title="Donate">
+                  <i className="fa fa-money"></i>
+                </button>
+              </a>
+              {isAuthenticated && (owner || collaborator) && <Fragment>
                 <button className="btn btn-danger" aria-label="Left Align" type="button" title="Download" onClick={e => onClickGetProjectFIles(e)}>
                   <i className="fa fa-download"></i>
                 </button>
+                <Link to={"/projects/:id/upload".replace(":id", location[2])} style={{ textDecoration: "none" }}>
+                  <button className="btn btn-danger" aria-label="Left Align" type="button" title="Upload">
+                    <i className="fa fa-upload"></i>
+                  </button>
+                </Link>
                 <Link to={"/projects/:id/edit".replace(":id", location[2])} style={{ textDecoration: "none" }}>
                   <button className="btn btn-danger" aria-label="Left Align" type="button" title="Edit">
                     <i className="fa fa-edit"></i>
                   </button>
                 </Link>
-              </div>
+                
+                </Fragment>
               }
+              </div>
             </div>
 
             <div id="Carousel">
@@ -402,17 +449,36 @@ const ProjectPage = ({ isAuthenticated }) => {
               {isAuthenticated && owner &&
                 <div>
                   <button className="btn btn-primary" onClick={(e) => setVisibilityAdvertisment(!visibilityAdvertisment)}>Add advisement</button>
-
+                  <button className="btn btn-danger" onClick={(e) => setVisibilityDelete(!visibilityDelete)}>Delete</button>
                 </div>
               }
+              { isAuthenticated && <Fragment>
               <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1 }}/* Available Props */ />
-              <button className="btn btn-primary" onClick={e => onClickRateProject(e)}>Rate</button>
+              <button className="btn btn-primary" onClick={e => onClickRateProject(e)}>Rate</button></Fragment>}
+              <div id="colabsDIv">
+                  <h4>Creators: </h4>
+                  <div id="colabs">
+                  <Link to={"/user/"+project["Project"]["ManagerId"]}>
+                  <figure>
+                    <img title={project["Project"]["Manager"]} src={project["Project"]["Avatar"].replace("./frontend/public/", "../")}></img>
+                  </figure>
+                  </Link>
+                  { collaborators && collaborators.map(colab => <Link to={"/user/"+colab["idUser"]}>
+                  <figure>
+                    <img title={colab["userName"]} src={colab["Avatar"].replace("./frontend/public/", "../")}></img>
+                  </figure>
+                  </Link>)}</div>
+              </div>
             </div>
           </div >
           <div className="detailsBox" id="adventaizmentPage">
             {!loadingAdv && advertisments.map(advertisment =>
               <div id="Apl">
-                <h1>{advertisment["namePosition"]}</h1>
+                <h1>{advertisment["namePosition"]}
+                <button className="btn btn-danger" aria-label="Left Align" type="button" title="Delete" onClick={(e) => {setVisibilityDeleteAdv(!visibilityDeleteAdv); setidAdv(advertisment["idAdvertisment"]);}}>
+                  <i className="fa fa-times"></i>
+                </button>
+                </h1>
                 <p>{advertisment["description"]}</p>
                 <div>
                   {!owner && advertisment["Aplications"].length === 0 &&
@@ -421,25 +487,25 @@ const ProjectPage = ({ isAuthenticated }) => {
                   {!owner && advertisment["Aplications"].length !== 0 &&
                     <div>
                       <h2>Your aplications:</h2>
+                      {advertisment["Aplications"].length === 0 &&
                       <Link to={"/projects/:id/aplication/create".replace(":id", advertisment["idAdvertisment"])}>
                         <button className="btn btn-primary" >Add application</button>
-                      </Link>
+                      </Link>}
                     </div>}
                   {advertisment["Aplications"].map(aplication =>
-                    <div>
-                      <h3>{aplication["description"]}</h3>
+                    <div className="d-flex flex-row m-auto" id="aplication">
+                      <h4 className="m-2">{aplication["description"]} </h4>
                       {owner &&
                         <Link to={"/user/:id".replace(":id", aplication["idUser"])}>
-                          {aplication["userName"]}
+                          <h4>by {aplication["userName"]}</h4>
                         </Link>}
                       {owner && <button className="btn btn-outline-secondary" type="button" name="aplication" value={aplication["id"]} onClick={e => onClickAcceptApplication(e)}>Accept</button>}
-                      {!owner && <div>
+                      {!owner && <div className="d-flex flex-row">
                         <button className="btn btn-primary" onClick={(e) => setIdApicationAndShowPopup(advertisment["idAdvertisment"])}>Edit</button>
                         <button className="btn btn-danger" name="aplication" value={advertisment["idAdvertisment"]} onClick={e => onClickDeleteApplication(e)}>Delete</button>
                       </div>
                       }
                     </div>)}
-
                 </div>
               </div>
             )
@@ -450,11 +516,13 @@ const ProjectPage = ({ isAuthenticated }) => {
             show={visibilityAplication}
             title="Aplication"
           >
-            <div className="input-group mb-3">
-              <form onSubmit={e => onSubmitAplication(e)}>
-                <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
-                <button className="btn btn-outline-secondary" type="submit">Add</button>
-              </form>
+            <div className="PopUpContener">
+              <div className="input-group mb-3">
+                <form onSubmit={e => onSubmitAplication(e)}>
+                  <textarea placeholder="Why you want to join?" name="description" value={description} onChange={e => onChange(e)}></textarea>
+                  <button className="btn btn-outline-secondary" type="submit">Add</button>
+                </form>
+              </div>
             </div>
           </CustomPopup>
           <CustomPopup
@@ -462,15 +530,31 @@ const ProjectPage = ({ isAuthenticated }) => {
             show={visibilityAdvertisment}
             title="Add advertisment"
           >
-            <div className="input-group mb-3">
-              <form onSubmit={e => onSubmitAdvisement(e)}>
-                <input type="text" className="form-control" name="position" value={position} onChange={e => onChange(e)} placeholder="Position" aria-label="Project name" aria-describedby="basic-addon2" />
-                <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
+            <div className="PopUpContener">
+              <div className="input-group mb-3">
+                <form onSubmit={e => onSubmitAdvisement(e)}>
+                  <input type="text" className="form-control" name="position" value={position} onChange={e => onChange(e)} placeholder="Position" aria-label="Project name" aria-describedby="basic-addon2" />
+                  <textarea placeholder="description" name="description" value={description} onChange={e => onChange(e)}></textarea>
 
-                <button className="btn btn-outline-secondary" type="submit">Add</button>
+                  <button className="btn btn-outline-secondary" type="submit">Add</button>
 
-              </form>
+                </form>
+              </div>
             </div>
+          </CustomPopup>
+          <CustomPopup
+            onClose={popupDeleteCloseHandlerDelete}
+            show={visibilityDelete}
+            title="Are you sure you want delete?"
+          >
+            <button className="btn btn-danger" type="submit" onClick={(e) => onClickDelete(e)}>Delete</button>
+          </CustomPopup>
+          <CustomPopup
+            onClose={popupDeleteCloseHandlerDeleteAdv}
+            show={visibilityDeleteAdv}
+            title="Are you sure you want delete?"
+          >
+            <button className="btn btn-danger" type="submit" onClick={(e) => onClickDelAdv(e)}>Delete</button>
           </CustomPopup>
         </div>
 

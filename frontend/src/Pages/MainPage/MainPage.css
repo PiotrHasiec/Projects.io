@@ -1,7 +1,7 @@
 #mainPage{
     display: flex;
     flex-direction: row;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     padding: 2em;
     padding-right: 6em;
     width: 100%;
@@ -12,19 +12,37 @@
 
 #mainPage *{
     box-sizing: border-box;
-    overflow: auto;
+    overflow: hidden;
 }
-#SearchProject{
-    width: 60%;
+
+#mainPage .cardProject{
+    width: 30%;
     margin: 2em;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
+#mainPage .cardProject:hover{
+    color: #fff;
+    background-color: #222;
+}
+#SearchProject{
+    width: 52%;
+    margin: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+}
+
 #SearchUser{
     width: 40%;
     margin: 2em;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-bottom: 0.2%;
 }
 
 #SearchUser .card-body{
@@ -32,12 +50,15 @@
 }
 
 #SearchProject .card-body{
-    position: relative;
+    text-align: center;
 }
+
+#space{
+    height: 30%;
+}
+
 #SearchProject .card-body .input-group{
-    position:absolute;
-    bottom: 0;
-    width: 90%;
+    width: 100%;
 }
 
 #SearchProject button, #SearchUser button{
@@ -56,15 +77,15 @@
 }
 
 #SearchProject figure{
-    width: 30%;
-    margin-top: 0.2em;
+    margin: auto;
 }
+
 #SearchUser figure{
     margin: auto;
 }
 
 img{
-    width: 60%;
+    width: 40%;
 }
 
 .fa-globe{

@@ -10,31 +10,34 @@
     filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
+#CreateCard .input-group{
+
+  margin: auto;
+  display: block;
+}
+
 #CreateCard input{
     width: 80%;
     margin-left: 10%;
     margin-right: 10%;
     margin-bottom: 2%;
-    border-radius: 5px;
+    border-radius: 0.5rem;
 }
 
 #CreateCard textarea{ 
     width: 80%;
-    margin-left: 10%;
-    margin-right: 10%;
-    border-radius: 5px;
-    border-color: lightgray;
-    padding-left: 3%;
-    padding-right: 3%;
+    border-radius: 0.5rem;
+    border-color: rgb(233, 233, 233);
+    padding-left: 2%;
+    padding-right: 2%;
 }
 
 #CreateCard button{
     width: 40%;
-    margin-left: 30%;
     margin-top:5%;
     background-color: #D61A46;
     color: #FBDFE6;
-    border-radius: 5px;
+    border-radius: 0.5rem;
 }
 
 @media screen and (max-width: 1300px) {

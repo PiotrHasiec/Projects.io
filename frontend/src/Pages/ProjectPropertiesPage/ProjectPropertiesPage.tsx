@@ -15,7 +15,9 @@ const ProjectPropertiesPage = () => {
     const [imgPaths, setImgPaths] = useState([]);
     const {title, description, stage, image} = formData
     const [filesArray, setFilesArray] = useState([]);
-
+    const [progress, setProgress] = useState(0);
+    const [error, setError] = useState(false);
+    const [success, setSuccess] = useState(false);
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
     const location = window.location.pathname.split("/");
 
@@ -70,7 +72,7 @@ const ProjectPropertiesPage = () => {
                     'Authorization': `JWT ${localStorage.getItem('access')}`
                 },
                 onUploadProgress: (p) => {
-                  console.log(p);
+                    setProgress(Math.round(p.loaded / p.total * 100));
                     //this.setState({
                         //fileprogress: p.loaded / p.total
                     //})
@@ -103,6 +105,8 @@ const ProjectPropertiesPage = () => {
             });
 
     }
+
+    
     const onSubmitDeleteImages = (e) => {
         getDeleteImages(e.target.value);
     }
@@ -130,7 +134,7 @@ const ProjectPropertiesPage = () => {
     
     return (
         <div id="Widget">
-            
+            <h1>Project properties</h1>
             <form onSubmit={e => onSubmitEditProject(e)}>
                 <h5>Name</h5><input type="text" className="form-control" placeholder="Title" aria-label="Title" aria-describedby="basic-addon2" name="title"  value={title} onChange={e => onChange(e)} ></input>
                 <br />
@@ -143,21 +147,28 @@ const ProjectPropertiesPage = () => {
                     <option value="PG">Play Ground</option>
                 </select>
                 <br />
-                <button className="btn btn-outline-primary" type="submit">Change</button>
+                <button className="btn btn-outline-primary" type="submit">Confirm changes</button>
+                <br /><br /><br />
             </form>
             <div>
                 {
                     imgPaths && <div>
                         <select name="image" value={image} onChange={e => onChange(e)}>
                         {imgPaths.map(path => <option value={path.replace("./frontend/public/FileBase/1/123124/presentation", "")}>{path.replace("./frontend/public/FileBase/1/123124/presentation", "")}</option> )}
-                        </select>
+                        </select><br />
                         <button className="btn btn-outline-primary" value={image} type="button" onClick={e => onSubmitDeleteImages(e)}>Delete</button>
-                    </div>
+                    </div>                
                 }
+                    <br /><br />
             </div>
-            <form onSubmit={e => onSubmitEditImages(e)}>
+            <form onSubmit={e => onSubmitEditImages(e)}>                 
                 <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" onChange={e => fileSelectHandler(e)}></input>
-                <button className="btn btn-outline-primary" type="submit">Change</button>
+                <br />
+                <button className="btn btn-outline-primary" type="submit">Upload</button>
+                <h3>{progress + " %"}</h3>
+                {progress===100 && error &&<span style={{color: "red"}}>Upload not Success!</span>}
+                {progress===100 && success &&<span style={{color: "green"}}>Upload Success!</span>}
+               
             </form>
         </div >
     );

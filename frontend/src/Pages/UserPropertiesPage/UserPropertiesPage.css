@@ -1,15 +1,21 @@
-#Widget{
+#WidgetUser{
     width: 75%;
     margin: auto;
     margin-top: 1em;
-    border-radius: 25px;
-    background: #D61A46;
+    border-radius: 0.15rem;
+    background: #fff;
     padding: 20px;
     width: 50%;
-    color:white;
+    color:#000;
+    border: 1px solid rgba(0,0,0,.125);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
-#Widget img{
+#WidgetUser h2{
+    color: #D61A46;
+}
+
+#WidgetUser img{
     width: 128px;
     height: 128px;
 }

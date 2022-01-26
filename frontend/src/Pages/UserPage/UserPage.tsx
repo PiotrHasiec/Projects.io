@@ -1,4 +1,4 @@
-import React, { Component, ReactNode, useEffect, useState } from "react"
+import React, { Component, Fragment, ReactNode, useEffect, useState } from "react"
 import { Route, Navigate, Link } from 'react-router-dom';
 import NavBar from "../../Component/NavBar/NavBar";
 import "./UserPage.css"
@@ -15,13 +15,27 @@ const UserPage = ({ isAuthenticated }) => {
     const [error1, setError1] = useState(false);
     const [error2, setError2] = useState(false);
     const [visibility, setVisibility] = useState(false);
+    const [visibilitySkills, setVisibilitySkills] = useState(false);
+    const [colab, setColab] = useState(false);
     const [rate, setRate] = useState(0);
+    const [skillsFormData, setSkillsFormData] = useState([]);
+    const [owner, setOwner] = useState(false);
     const [formData, setFormData] = useState({
-        password: ''
+        password: '',
+        Cpp: false,
+        CSharp: false,
+        Python: false,
+        SQL: false,
+        Grapghic3D: false,
+        Grapghic2DRaster: false,
+        Grapghic2DVector: false,
+        Assembler: false,
+        Other: ''
     });
-    const { password } = formData;
+    const { password, Cpp, CSharp, Python, SQL, Grapghic3D, Grapghic2DRaster, Grapghic2DVector, Assembler, Other } = formData;
 
     const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+    const onCheck = e => setFormData({ ...formData, [e.target.name]: e.target.checked });
 
     const deleteProfile = e => {
         e.preventDefault();
@@ -32,18 +46,24 @@ const UserPage = ({ isAuthenticated }) => {
 
     useEffect(() => {
         getProfile();
+        getSkillsForm();
+        getProjects();
     }, []);
 
     useEffect(() => {
         if (isAuthenticated === true) {
-            getProjects();
             isCollaborator();
+            getProfile();
         }
 
     }, [isAuthenticated]);
 
     const popupDeleteCloseHandler = (e) => {
         setVisibility(e);
+    };
+
+    const popupSkillsCloseHandler = (e) => {
+        setVisibilitySkills(e);
     };
     const handleRating = (rate: number) => {
         setRate(rate)
@@ -75,13 +95,16 @@ const UserPage = ({ isAuthenticated }) => {
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `JWT ${localStorage.getItem('access')}`
+                'Authorization': isAuthenticated ? `JWT ${localStorage.getItem('access')}` : ''
             }
         })
             .then(response => response.json())
             .then(responseJson => {
                 setProfile([responseJson]);
                 setLoadingProfile(false);
+                if (responseJson["isOwner"] == "True") {
+                    setOwner(true)
+                }
             })
             .catch(error => {
                 setLoadingProfile(false);
@@ -91,13 +114,11 @@ const UserPage = ({ isAuthenticated }) => {
 
 
     const getProjects = () => {
-        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Projects/api/Projects/myProjects/`, {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/getProjects/`.replace(":id", location[2]), {
             method: 'GET',
             mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `JWT ${localStorage.getItem('access')}`
-
             }
         })
             .then(response => response.json())
@@ -122,7 +143,9 @@ const UserPage = ({ isAuthenticated }) => {
         })
             .then(response => response.json())
             .then(responseJson => {
-
+                if (responseJson === "True") {
+                    setColab(true);
+                }
             })
             .catch(error => {
 
@@ -155,24 +178,45 @@ const UserPage = ({ isAuthenticated }) => {
 
     }
 
-    const onClickBecomeDeveloper = (e) => {
-        becomeDeveloper();
 
-    }
 
-    const becomeDeveloper = () => {
-        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/:id/`.replace(":id", location[2]), {
-            method: 'PATCH',
+
+
+    const getSkillsForm = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/developer/`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `JWT ${localStorage.getItem('access')}`
             },
             mode: 'cors',
-            body: JSON.stringify({ "is_developer": 1 })
         })
             .then(response => response.json())
             .then(responseJson => {
-                //setIdProject(responseJson.pk);
+                setSkillsFormData(Object.keys(responseJson));
+            })
+            .catch(error => {
+
+            });
+    }
+
+    const onClickChangeSkills = (e) => {
+        e.preventDefault();
+        changeSkills();
+
+    }
+    const changeSkills = () => {
+        return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/developer/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `JWT ${localStorage.getItem('access')}`
+            },
+            mode: 'cors',
+            body: JSON.stringify({ Cpp, CSharp, Python, SQL, Grapghic3D, Grapghic2DVector, Grapghic2DRaster, Assembler, Other })
+        })
+            .then(response => response.json())
+            .then(responseJson => {
             })
             .catch(error => {
 
@@ -182,70 +226,108 @@ const UserPage = ({ isAuthenticated }) => {
     return (
         <div>
             {!loadingProfile && !error1 && profile.map(profile =>
-                <div id="MainProjectDiv">
-
+                <div id="MainUserDiv" >
                     <div id="Profile-card">
-                        <h1><text>User Page</text></h1>
+                        <h1><span>{profile["User"]["name"]}</span>'s user page</h1>
                         <img id="User-avatar" src={profile["User"]["avatar"].replace("./frontend/public/", "../")}></img>
                         <div id="Name-card">
-                            <h2><text>{profile["User"]["name"]}</text></h2>
-                            <h3><text>EMAIL</text></h3>
-                        </div>
-                        <div id="About-field">
-                            <h4><text>ABOUT</text></h4>
-                            <div id="About-text">
-                                <b><text>Text</text></b>
-                            </div>
+                            <b>{profile["User"]["description"]}</b>
                         </div>
                     </div>
-
                     <div id="Details-card">
                         <h1><text>Details</text></h1>
                         <h4>
-                            <table>
-                                <tr>
-                                    <td><text>Averange rate:</text></td>
-                                    <td><text></text></td>
-                                </tr>
-                                <tr>
-                                    <td> <text>Took part in:</text></td>
-                                    <td> <text></text></td>
-                                </tr>
-                                <tr>
-                                    <td><text>Skills:</text></td>
-                                    <td><text></text></td>
-                                </tr>
-                            </table>
+                            <div id="row">
+                                <div id="c1"><text>Averange rate:</text></div>
+                                <div id="c2"><text>{profile["User"]["averageRate"]}</text></div>
+                            </div>
+                            <div >
+                                <div id="row">
+                                    <div id="c1"><text>Skills:</text></div></div>
+                                <div className="row p-2 pl-3">
+
+                                    {profile["Skills"]["Cpp"] ? <div>C++</div> : ""}
+                                    {profile["Skills"]["CSharp"] ? <div>C#</div> : ""}
+                                    {profile["Skills"]["Python"] ? <div>Python</div> : ""}
+                                    {profile["Skills"]["SQL"] ? <div>SQL</div> : ""}
+                                    {profile["Skills"]["Graphic3D"] ? <div>Graphic3D</div> : ""}
+                                    {profile["Skills"]["Graphic2DRaster"] ? <div>Graphic2DRaster</div> : ""}
+                                    {profile["Skills"]["Graphic2DVector"] ? <div>Graphic2DVector</div> : ""}
+                                    {profile["Skills"]["Assembler"] ? <div>Assembler</div> : ""}
+                                    {profile["Skills"]["Other"] ? <div>{profile["Skills"]["Other"]}</div> : ""}
+                                </div>
+                            </div>
                         </h4>
+                        {colab && <Fragment>
+                            <div id="row">
+                                <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1 }}/* Available Props */ />
+                            </div><div id="row">
+                                <button className="btn btn-danger" onClick={e => onClickRateProfile(e)}>Rate</button>
+                            </div></Fragment>}
                     </div>
-                    <Rating onClick={handleRating} ratingValue={rate} style={{ zIndex: 1 }}/* Available Props */ />
-                    <button className="btn btn-primary" onClick={e => onClickRateProfile(e)}>Rate</button>
-                    {profile["isOwner"] === "True" &&
+                    {
+                        profile["isOwner"] === "True" &&
                         <div id="Owner-exclusive">
                             <Link to="/user/edit" style={{ textDecoration: 'none' }}>
                                 <button type="button" className="btn">Edit profile</button>
                             </Link>
+                            <button type="button" className="btn" onClick={(e) => setVisibilitySkills(!visibilitySkills)}>{profile["User"]["is_developer"] ? "Edit Skills" : "Become Developer"}</button>
 
-                            <button type="button" className="btn" onClick={(e) => becomeDeveloper()}>Become developer</button>
                             <button type="button" className="btn" onClick={(e) => setVisibility(!visibility)}>Delete profile</button>
-                            <CustomPopup
-                                onClose={popupDeleteCloseHandler}
-                                show={visibility}
-                                title="Delete Profile"
-                            >
-                                <h2>Type password to delete</h2>
-                                <form onSubmit={e => deleteProfile(e)}>
-                                    <input type="password" name="password" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" value={password}
-                                        onChange={e => onChange(e)} />
-                                    <button type="submit" className="btn">YES</button>
-                                </form>
-                            </CustomPopup>
+
                         </div>
                     }
-                </div>
+
+                    <div id="Projects-card">
+                        <h1>{owner ? <Fragment>My projects</Fragment> : <Fragment>Projects of {profile["User"]["name"]}</Fragment>}</h1>
+                        {!loadingProjects && projects.map(project => <div>
+                            <div className="card-body">
+                                <div id="project-name">
+                                    <h2 className="card-title">{project["Project"]["title"]}</h2>
+                                    <p className="card-text">{project["Project"]["description"]}</p>
+                                </div>
+                                <div className="project-button">
+                                    <Link to={"/Projects/" + project["Project"]["pk"]} style={{ textDecoration: 'none' }}>
+                                        <button className="btn btn-outline-danger" type="button">Show</button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>)}
+                    </div>
+
+
+                    <CustomPopup
+                        onClose={popupSkillsCloseHandler}
+                        show={visibilitySkills}
+                        title={"Add Skills" + (profile["User"]["is_developer"] ? "" : " and become developer")}
+                    ><div className="PopUpContener">
+                            <form onSubmit={e => onClickChangeSkills(e)}>
+                                {skillsFormData && skillsFormData.map(skill => <div>
+                                    {skill}
+                                    {(skill === "Other") ? <textarea name={skill} value={Other} onChange={e => onChange(e)} ></textarea> : <input type="checkbox" name={skill} onChange={e => onCheck(e)} />}
+                                </div>)}
+
+                                <button type="submit" className="btn">Add Skills</button>
+                            </form>
+                        </div>
+                    </CustomPopup>
+                    <CustomPopup
+                        onClose={popupDeleteCloseHandler}
+                        show={visibility}
+                        title="Delete Profile"
+                    ><div className="PopUpContener">
+                            <h2>Enter your password to delete</h2>
+                            <form onSubmit={e => deleteProfile(e)}>
+                                <input type="password" name="password" className="form-control" placeholder="Password" aria-label="Password" aria-describedby="basic-addon2" value={password}
+                                    onChange={e => onChange(e)} />
+                                <button type="submit" className="btn">YES</button>
+                            </form>
+                        </div>
+                    </CustomPopup>
+                </div >
             )
             }
-        </div>
+        </div >
     );
 }
 
