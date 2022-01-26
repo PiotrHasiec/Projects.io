@@ -38,7 +38,7 @@ class Users(AbstractBaseUser,PermissionsMixin):
     idRole = ForeignKey('Roles', on_delete=SET_NULL, null=True)
     email = EmailField(unique=True, null=False)
     name = CharField(max_length=50, unique=True, null=False)
-    avatar = CharField(max_length=100,default = "./frontend/public/FileBase/aaa.bmp")
+    avatar = CharField(max_length=100,default = "./frontend/public/FileBase/defaulAvatar.bmp")
     description = TextField(max_length=255, blank=True, null=True)
     averageRate = DecimalField(max_digits=3, decimal_places=2,default=0)
     is_active = models.BooleanField(default=True)

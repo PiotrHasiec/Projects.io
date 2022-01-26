@@ -23,9 +23,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
     def partial_update (self, request, pk=None):
-        if request.user.id == int(pk):
-
-           return super().partial_update(request, pk)
+      if request.data.get("password",None) !=None:
+        return response.Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED) 
+      elif request.user.id == int(pk):
+        if request.user.is_developer == True:
+          request.data.update({"is_developer":True})
+        return super().partial_update(request, pk)
+      else:
         return response.Response({"detail":"Błąd autoryzacji"},status=status.HTTP_401_UNAUTHORIZED) 
        
 

@@ -21,11 +21,15 @@ class AdvertisementsViewSet(viewsets.ModelViewSet):
     def createApplication(self, request,pk = None, *args, **kwargs):
         #if pk == request.user.id:
         if request.method == 'POST':
-            return ApplicationsViewSet.create_in_advertisment(request,str(pk))
+            if request.user.is_developer:
+                return ApplicationsViewSet.create_in_advertisment(request,str(pk))
+            else:
+                return Response({"detail":"Żeby dodać aplikację włącz opcję developer w ustawieniach"})
         elif request.method == 'DELETE':
             aplicationToDelete = Applications.objects.filter(idAdvertisement_id = pk, idUser = request.user)
             aplicationToDelete.delete()
             return Response()
+        
         #return Response({"detail":"Błąd autoryzacji"})
 
     def list_in_project(request,pk = None):

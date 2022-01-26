@@ -87,17 +87,19 @@ class ProjectsViewSet(viewsets.ModelViewSet):
       return Response()
 
     def create(self, request, **kwargs):
-      data = request.data
-      
-      datapath = str(request.user.id)+"/"+data.get("title")+"/"+"data"
-      datapath = "./frontend/public/FileBase/"+datapath
-      presentationpath = str(request.user.id)+"/"+data.get("title")+"/"+"presentation"
-      presentationpath = "./frontend/public/FileBase/"+presentationpath
-      os.makedirs(datapath)
-      os.makedirs(presentationpath)
-      p =Projects( idOwner_id = request.user.id,title=data.get("title"),description=data.get("description"),folder=datapath,presentation =presentationpath)
-      p.save()
-      return Response({"pk":str(p.id)})
+      if request.user.is_developer:
+        data = request.data
+        datapath = str(request.user.id)+"/"+data.get("title")+"/"+"data"
+        datapath = "./frontend/public/FileBase/"+datapath
+        presentationpath = str(request.user.id)+"/"+data.get("title")+"/"+"presentation"
+        presentationpath = "./frontend/public/FileBase/"+presentationpath
+        os.makedirs(datapath)
+        os.makedirs(presentationpath)
+        p =Projects( idOwner_id = request.user.id,title=data.get("title"),description=data.get("description"),folder=datapath,presentation =presentationpath)
+        p.save()
+        return Response({"pk":str(p.id)})
+      else:
+        return Response({"detail":"Żeby dodać projekt włącz opcję developer w ustawieniach"})
 
     def update(self, request, pk=None, *args, **kwargs):
         p = Projects.objects.filter(pk=pk).first()
