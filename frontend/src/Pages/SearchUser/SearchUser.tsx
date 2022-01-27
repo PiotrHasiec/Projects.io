@@ -14,7 +14,7 @@ const SearchUser = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const [down, setDown] = useState(0);
-    const [up, setUp] = useState(2);
+    const [up, setUp] = useState(4);
     const location = useLocation();
     
 
@@ -46,13 +46,13 @@ const SearchUser = () => {
     }, [down, up])
 
     const changeRightState = (e) => {
-        setDown(down + 2);
-        setUp(up + 2);
+        setDown(down + 4);
+        setUp(up + 4);
     }
 
     const changeLeftState = (e) => {
-        setDown(down - 2);
-        setUp(up - 2);
+        setDown(down - 4);
+        setUp(up - 4);
     }
     const getObject = () => {
         return fetch(`${process.env.REACT_APP_REMOTE_URL}/Users/api/Users/?namecontain=${nickname}&sort=${direction}&up=${up}&down=${down}`, {
@@ -108,7 +108,7 @@ const SearchUser = () => {
                     </button> 
                 </div>
             }
-            {  !loading && !error && users.length === 2 && 
+            {  !loading && !error && users.length === 4 && 
                 <div id="right-div">
                 <button className="btn btn-outline-danger" id="right" aria-label="Left Align" onClick={e => changeRightState(e)}type="button" title="Next" >
                         <i className="fa fa-arrow-right"></i>
