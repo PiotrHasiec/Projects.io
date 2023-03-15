@@ -1,0 +1,31 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+django = "==3.0.14"
+djangorestframework = "*"
+django-rest-knox = "*"
+django-filter = "*"
+cryptography = "*"
+urllib3 = "*"
+knox = "*"
+oauthlib = "*"
+boto3 = "*"
+optional-django = "*"
+requests-oauthlib = "*"
+rpclib = "*"
+rsa = "*"
+autopep8 = "*"
+pillow = "*"
+django-cors-headers = "*"
+djoser = "*"
+djangorestframework-jwt = "==1.11.0"
+djangorestframework-simplejwt = "*"
+pyjwt = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"

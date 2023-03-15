@@ -15,5 +15,6 @@ autopep8
 pillow
 django-cors-headers
 djoser
-jwt
-djangorestframework-jwt==1.11.0
+pyjwt
+djangorestframework-simplejwt
+
