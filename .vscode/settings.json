@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/404c6d76-0417-4156-b24c-2772d86c281b/resourceGroups/Szpil/providers/Microsoft.Web/sites/SzpilTestApp",
+    "appService.deploySubpath": "."
+}
