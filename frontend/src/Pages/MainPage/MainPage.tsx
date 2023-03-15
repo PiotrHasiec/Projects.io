@@ -87,7 +87,7 @@ const MainPage = () => {
         </div>
       </div>
       {!error && !loading && projects.map(project =>
-      <div className="card cardProject" onClick={e => navigate(("/projects/:id").replace(":id", project["id"]))}>
+      <div className="card cardProject" onClick={e => navigate(("/projects/:id").replace(":id", project["pk"]))}>
         <div className="card-body">
           <figure>
             <img src={"../podium.png"} alt="globe image"></img>

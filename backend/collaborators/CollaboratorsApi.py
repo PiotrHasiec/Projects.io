@@ -26,7 +26,7 @@ class CollaboratorsViewSet(viewsets.ModelViewSet):
         data  = request.GET
         if data.get("project","") == "":
             return Response(status = status.HTTP_403_FORBIDDEN )
-        queryset = CollaboratorsProject.objects.filter(idProject_id = data.get("project",""))
+        queryset = CollaboratorsProject.objects.filter(idProject_id = data.get("project","")).distinct()
         return Response(CollaboratorsProjectUnAuthorizeSerializer(queryset, many=True).data)
         
     def destroy(self, request, *args, **kwargs):

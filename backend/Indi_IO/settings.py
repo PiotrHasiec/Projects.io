@@ -69,7 +69,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 X_FRAME_OPTIONS = 'ALLOW'
-CORS_ORIGIN_WHITELIST = ["http://localhost:3000","http://127.0.0.1:3000"]
+CORS_ORIGIN_WHITELIST = ["http://localhost:8080","http://127.0.0.1:8080"]
 CORS_ALLOW_ALL_ORIGINS: True
 CORS_ALLOW_METHODS = [
     "DELETE",
@@ -184,7 +184,7 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': (
         'rest_framework_simplejwt.tokens.AccessToken',
     ),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
